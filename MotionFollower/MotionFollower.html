@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MotionFollower: Editing Video Motion via Lightweight Score-Guided Diffusion</title>
+
+  <script type="module" src="./MotionFollower/model-viewer.min.js"></script>
+
+  <script src="./MotionFollower/jquery.min.js"></script>
+  <script type="text/javascript" src="./MotionFollower/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="./MotionFollower/jquery-migrate-1.2.1.min.js"></script>
+  <script src="./MotionFollower/interact.min.js"></script>
+
+  <link href="./MotionFollower/css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" href="./MotionFollower/slick.css">
+  <link rel="stylesheet" type="text/css" href="./MotionFollower/slick-theme.css">
+
+  <link rel="stylesheet" href="./MotionFollower/bulma.min.css">
+  <link rel="stylesheet" href="./MotionFollower/bulma-slider.min.css">
+  <link rel="stylesheet" href="./MotionFollower/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./MotionFollower/academicons.min.css">
+  <link rel="stylesheet" href="./MotionFollower/index.css">
+
+  <script defer="" src="./MotionFollower/fontawesome.all.min.js"></script>
+  <script src="./MotionFollower/bulma-slider.min.js"></script>
+  <script src="./MotionFollower/index.js"></script>
+</head>
+<body>
+
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+      </div>
+      <div class="container has-text-centered">
+        <h1 class="title is-2 publication-title">
+          MotionFollower:
+        </h1>
+        <h3 class="title is-3 publication-title">
+          Editing Video Motion via Lightweight Score-Guided Diffusion
+        </h3>
+        <div class="is-size-5 publication-authors">
+          <div class="author-block">Shuyuan Tu</a><sup>1</sup>, </div>
+          <div class="author-block">Qi Dai</a><sup>2</sup>, </div>
+          <div class="author-block">Zihao Zhang</a><sup>1</sup>, </div>
+          <div class="author-block">Sicheng Xie</a><sup>1</sup>, </div>
+          <div class="author-block">Zhi-Qi Cheng</a><sup>3</sup>, </div>
+          <div class="author-block">Chong Luo</a><sup>2</sup>, </div>
+          <div class="author-block">Xintong Han</a><sup>4</sup>, </div>
+          <div class="author-block">Zuxuan Wu</a><sup>1</sup></div>
+          <div class="author-block">Yu-Gang Jiang</a><sup>1</sup></div>
+        </div>
+
+        <div class="is-size-5 publication-authors">
+          <span class="author-block">&nbsp;&nbsp;<sup>1</sup>Fudan University</span>
+          <span class="author-block">&nbsp;&nbsp;<sup>2</sup>Microsoft Research Asia</span>
+          <span class="author-block">&nbsp;&nbsp;<sup>3</sup>Carnegie Mellon University</span>
+          <span class="author-block">&nbsp;&nbsp;<sup>4</sup>Huya Inc</span>
+        </div>
+
+        <div class="column has-text-centered">
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                </span>
+                <span>Paper</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                </span>
+                <span>arXiv</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://github.com/Francis-Rings/MotionFollower" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                    <i class="fab fa-github"></i>
+                </span>
+                <span>Code</span>
+                </a>
+            </span>
+    </div>
+  </div>
+</div></div></div></section>
+
+<section class="hero teaser">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-six-fifths">
+      <h2 class="subtitle has-text-justified">
+        <b>TL;DR:</b> We propose MotionFollower, a lightweight motion editing method for transferring motion from target video to source while keeping source background, protagonists' appearance, and camera movement.
+      </h2>
+    </div>
+  </div>
+</div></div></section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-2, columns is-centered">Editing Results</h2>
+    <hr>
+    <center>
+      <h2 class="title is-4"><b style="color:#008AD7; font-weight:normal">▶ </b>Video Motion Editing</h2>
+      <p>
+        MotionFollower aims to manipulate the motion of a video in alignment with a target video, which is regarded as a higher-level and more challenging video editing scenario---motion editing.
+      </p>
+    </center>
+    <center>
+      <table class="center">
+        <tbody><tr>
+          <td width="16.5%" style="text-align:center;">Source</td>
+          <td width="16.5%" style="text-align:center;">Target</td>
+          <td width="16.5%" style="text-align:center;">Edited Result</td>
+          <td style="padding-left: 5px; padding-right: 5px;"></td>
+          <td width="16.5%" style="text-align:center;">Source</td>
+          <td width="16.5%" style="text-align:center;">Target</td>
+          <td width="16.5%" style="text-align:center;">Edited Result</td>
+        </tr>
+      </tbody></table>
+    </center>
+  
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/1-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/1-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+      <tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/2-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/2-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/3-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/3-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/4-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/4-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/5-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/5-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/6-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/6-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/7-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/7-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/8-1.mp4" style="width: 100%; height: auto;"></video></td>
+        <td style="padding-left: 5px; padding-right: 5px;"></td>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/8-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <!-- Begin of qualitative comparisons -->
+    <hr>
+    <center>
+      <h2 class="title is-4"><b style="color:#008AD7; font-weight:normal">▶ </b>Qualitative Comparisons</h2>
+      <p>
+        Video motion editing resutls for comparisons between MotionFollower and baselines.
+      </p>
+    </center>
+
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">Tune-A-Video</td>
+        <td width="12.5%" style="text-align:center;">Follow-Your-Pose</td>
+        <td width="12.5%" style="text-align:center;">DisCo</td>
+        <td width="12.5%" style="text-align:center;">MagicAnimate</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/9-1.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">AnimateAnyone</td>
+        <td width="12.5%" style="text-align:center;">Champ</td>
+        <td width="12.5%" style="text-align:center;">MotionEditor</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/9-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">Tune-A-Video</td>
+        <td width="12.5%" style="text-align:center;">Follow-Your-Pose</td>
+        <td width="12.5%" style="text-align:center;">DisCo</td>
+        <td width="12.5%" style="text-align:center;">MagicAnimate</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/10-1.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">AnimateAnyone</td>
+        <td width="12.5%" style="text-align:center;">Champ</td>
+        <td width="12.5%" style="text-align:center;">MotionEditor</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/10-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">MotionEditor</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/11.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">MotionEditor</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/12.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">MotionEditor</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/13.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <!-- End of qualitative comparisons -->
+
+
+    <hr>
+    <!-- Begin of cross-id animation -->
+    <center>
+      <h2 class="title is-4"><b style="color:#008AD7; font-weight:normal">▶ </b> Human Motion Transfer Comparison</h2>
+      <p>
+        Comprisons between MotionFollower and SOTA baselines for human motion transfer, i.e., aniamting the given source images using motion sequences from different videos.
+      </p>
+    </center>
+    <br>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">DisCo</td>
+        <td width="12.5%" style="text-align:center;">MagicAnimate</td>
+        <td width="12.5%" style="text-align:center;">AnimateAnyone</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/14-1.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">Champ</td>
+        <td width="12.5%" style="text-align:center;">MotionEditor</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/14-2.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+
+    <!-- End of cross-id-->
+
+    <hr>
+    <center>
+      <h2 class="title is-4"><b style="color:#008AD7; font-weight:normal">▶ </b> Long Video</h2>
+      <p>
+        MotionFollower can perform motion editing on the long video (600 frames) featuring the complicated background, the large camera movement and the complex protagonist's appearance.
+      </p>
+    </center>
+
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">MotionEditor</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/15.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+    <!-- End of unseen domain animation -->
+
+    <!-- Begin of DALLE3 animation -->
+    <hr>
+    <center>
+      <h2 class="title is-4"><b style="color:#008AD7; font-weight:normal">▶ </b> Ablation Study</h2>
+      <p>
+        Ablation study regarding the core components of MotionFollower.
+      </p>
+    </center>
+    <table class="center">
+      <tbody><tr>
+        <td width="12.5%" style="text-align:center;">Source</td>
+        <td width="12.5%" style="text-align:center;">Target</td>
+        <td width="12.5%" style="text-align:center;">w/o ReCtr</td>
+        <td width="12.5%" style="text-align:center;">(w/o ReCtr)+RNet</td>
+        <td width="12.5%" style="text-align:center;">(w/o PoCtr)+CNet</td>
+        <td width="12.5%" style="text-align:center;">w/o guidance</td>
+        <td width="12.5%" style="text-align:center;">MotionFollower</td>
+      </tr>
+    </tbody>
+    </table>
+
+    <table class="center">
+      <tbody><tr>
+        <td><video muted="" autoplay="autoplay" loop="loop" src="./assets/16.mp4" style="width: 100%; height: auto;"></video></td>
+      </tr>
+    </tbody></table>
+    <!-- End of DALLE3 animation -->
+
+
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-six-fifths">
+        <h2 class="title is-2, columns is-centered">Framework</h2>
+      <br>
+      <h2 class="subtitle has-text-justified">
+        <figure style="width: 100%;">
+          <a href="./MotionFollower/Framework.png">
+              <img width="100%" src="./MotionFollower/Framework.png">
+          </a>
+        </figure>
+      </h2>
+    </div>
+  </div>
+  In training, two lightweight signal controllers and U-Net are trainable. The model is first trained with single frame (first stage), then with video clip (second stage). In inference, we build a two-branch structure, one for reconstruction and the other for editing. Score guidance is computed using features from the two branches, which is then used to update the latent.
+</div>
+</div></section>
+
+<section class="section" id="BibTeX">
+  <div class="container content is-max-desktop">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{tu2024motionfollower,
+  title={MotionFollower: Editing Video Motion via Lightweight Score-Guided Diffusion},
+  author={Shuyuan Tu and Qi Dai and Zihao Zhang and Sicheng Xie and Zhi-Qi Cheng and Chong Luo and Xintong Han and Zuxuan Wu and Yu-Gang Jiang},
+  journal={arXiv preprint arXiv:},
+  year={2024}
+}</code></pre>
+  </div>
+</section>
+
+<script type="text/javascript" src="./MotionFollower/slick.min.js"></script>
+
+
+
+<style>
+  .videoContainer {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .videoContainer video.mainVideo {
+    width: 100%;
+    height: auto;
+  }
+
+  .videoContainer video.overlayVideo {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40%; /* Adjust this value to make video2 smaller or larger */
+  }
+</style>
+</body></html>
