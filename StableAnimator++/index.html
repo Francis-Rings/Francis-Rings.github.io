@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+  <!-- Replace the content tag with appropriate information -->
+  <meta name="description" content="DESCRIPTION META TAG">
+  <meta property="og:title" content="SOCIAL MEDIA TITLE TAG"/>
+  <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG"/>
+  <meta property="og:url" content="URL OF THE WEBSITE"/>
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="static/image/your_banner_image.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+
+
+  <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+  <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>StableAnimator++</title>
+<!--  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">-->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">StableAnimator++: Overcoming Pose Misalignment and Face Distortion for Human Image Animation</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://github.com/Francis-Rings">Shuyuan Tu</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://chenhsing.github.io/">Zhen Xing</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://xthan.github.io/">Xintong Han</a><sup>3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://faculty.washington.edu/zhiqics/">Zhi-Qi Cheng</a><sup>4</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://daiqi1989.github.io/">Qi Dai</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.microsoft.com/en-us/research/people/cluo/">Chong Luo</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=7t12hVkAAAAJ&hl=en">Zuxuan Wu</a><sup>1</sup>
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=f3_FP8AAAAAJ&hl=en">Yu-Gang Jiang</a><sup>1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Fudan University,</span>
+            <span class="author-block"><sup>2</sup>Microsoft Research Asia,</span>
+            <span class="author-block"><sup>3</sup>Hunyuan, Tencent Inc,</span>
+            <span class="author-block"><sup>4</sup>University of Washington</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=jW2xdNQm0Xg"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Teaser video-->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-video1">
+          <video poster="" id="video1" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_1.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video2">
+          <video poster="" id="video2" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_69.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video3">
+          <video poster="" id="video3" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_72.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <h2 class="subtitle has-text-centered">
+        Please hover your mouse over the video to watch the full content.
+      </h2>
+      <h2 style="color: red; font-weight: bold; text-align: justify;">
+        All animations are directly synthesized by StableAnimator++ without the use of any face-related post-processing tools, such as the face-swapping tool FaceFusion or face restoration models like GFP-GAN and CodeFormer.
+        The presented skeleton poses are significantly misaligned with the reference images in terms of body size and position.
+      </h2>
+      <h1 style="font-weight: bold; text-align: justify;">
+        We present StableAnimator++, the first ID-preserving video diffusion framework with learnable pose alignment, capable of generating high-quality videos conditioned on a reference image and a pose sequence without any post-processing.
+      </h1>
+    </div>
+  </div>
+</section>
+<!-- End teaser video -->
+
+<section class="section hero is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3" style="text-align: center;">Human Image Animation Results</h2>
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-video1">
+          <video poster="" id="video1" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_3.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video2">
+          <video poster="" id="video2" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_4.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video3">
+          <video poster="" id="video3" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_11.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video4">
+          <video poster="" id="video4" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_12.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video5">
+          <video poster="" id="video5" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_15.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-video1">
+          <video poster="" id="video1" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_18.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video2">
+          <video poster="" id="video2" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_23.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video3">
+          <video poster="" id="video3" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_32.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video4">
+          <video poster="" id="video4" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_33.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video5">
+          <video poster="" id="video5" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_35.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-video1">
+          <video poster="" id="video1" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_45.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video2">
+          <video poster="" id="video2" autoplay controls muted loop height="100%">
+            <source src="static/videos/animation_video_49.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video3">
+          <video poster="" id="video3" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_54.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video4">
+          <video poster="" id="video4" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_55.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video5">
+          <video poster="" id="video5" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_66.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-video6">
+          <video poster="" id="video6" autoplay controls muted loop height="100%">\
+            <source src="static/videos/animation_video_68.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <h2 class="subtitle has-text-centered">
+        Please hover your mouse over the video to watch the full content.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- Paper abstract -->
+<section class="hero is-small">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Current diffusion models for human image animation often struggle to maintain identity (ID) consistency, especially when the reference image and driving video differ significantly in body size or position.
+We introduce StableAnimator++, the first ID-preserving video diffusion framework with learnable pose alignment, capable of generating high-quality videos conditioned on a reference image and a pose sequence without any post-processing.
+Building upon a video diffusion model, StableAnimator++ contains carefully designed modules for both training and inference, striving for identity consistency.
+In particular, StableAnimator++ first uses learnable layers to predict the similarity transformation matrices between the reference image and the driven poses via injecting guidance from Singular Value Decomposition (SVD).
+These matrices align the driven poses with the reference image, mitigating misalignment to a great extent.
+StableAnimator++ then computes image and face embeddings using off-the-shelf encoders, refining the face embeddings via a global content-aware Face Encoder. To further maintain ID, we introduce a distribution-aware ID Adapter that counteracts interference caused by temporal layers while preserving ID via distribution alignment.
+During the inference stage, we propose a novel Hamilton-Jacobi-Bellman (HJB) based face optimization integrated into the denoising process, guiding the diffusion trajectory for enhanced facial fidelity.
+Experiments on benchmarks show the effectiveness of StableAnimator++ both qualitatively and quantitatively.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<!-- Youtube video -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <!-- Paper video. -->
+      <h2 class="title is-3" style="text-align: center;">Demo Presentation</h2>
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          
+          <div class="publication-video">
+            <!-- Youtube embed code here -->
+            <iframe src="https://www.youtube.com/embed/jW2xdNQm0Xg" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End youtube video -->
+
+
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+       <h2 class="title is-3" style="text-align: center;">Framework</h2>
+       <img src="static/images/framework.jpg" alt="MY ALT TEXT"/>
+        <h2>
+          Architecture of StableAnimator++. (a) and (b) refer to the structure of the Face Encoder and each block in the U-Net.
+   We first apply our learnable alignment to the driving pose sequence and feed the aligned results into the PoseNet for motion modeling.
+   Embeddings from the Image Encoder and Face Encoder are injected into each block of U-Net. Given the reference, we extract the image embeddings and face embeddings utilizing Image Encoder and Arcface.
+   The face embeddings are fed into the FaceEncoder to enhance ID. Then, image embeddings and refined face embeddings are injected into the U-Net through the ID Adapter to ensure ID consistency.
+        </h2>
+   </div>
+    <h2 class="subtitle has-text-centered">
+        If you have any suggestions or find our work helpful, feel free to contact me.
+        <a href="mailto:francisshuyuan@gmail.com">Email: francisshuyuan@gmail.com</a>
+    </h2>
+</div>
+</div>
+</section>
+  
+  
+
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Statcounter tracking code -->
+  
+<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+
+  </body>
+  </html>
