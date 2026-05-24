@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Baton: Explicit Semantic Blueprints for Joint Video-Audio Generation">
+  <meta name="keywords" content="Baton, video generation, audio generation, semantic blueprint, diffusion, multimodal">
+  <meta name="author" content="Shuyuan Tu, Qi Tian, Zihan Yang, Yue Wu, Xintong Han, Weijie Kong, Jiangfeng Xiong, Jian-Wei Zhang, Zhao Zhong, Liefeng Bo, Zuxuan Wu, Yu-Gang Jiang">
+
+  <title>Baton: Explicit Semantic Blueprints for Joint Video-Audio Generation</title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="static/js/bulma-carousel.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent-color: #60a5fa;
+      --text-primary: #ffffff;
+      --text-secondary: #cbd5e1;
+      --text-light: #94a3b8;
+      --background-primary: #0f172a;
+      --background-secondary: #1e293b;
+      --background-accent: #334155;
+      --border-color: #334155;
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+      --gradient-primary: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent-color); transition: var(--transition); }
+    a:hover { color: var(--primary-hover); }
+
+    .publication-title {
+      font-weight: 800 !important;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem !important;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: var(--text-primary);
+    }
+    .title { color: var(--text-primary) !important; }
+    .subtitle { color: var(--text-secondary) !important; }
+    .title.is-3 {
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: inline-block;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .author-block a {
+      color: var(--accent-color);
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.25s ease, text-decoration-color 0.25s ease;
+    }
+    .author-block a:not(.author-link-placeholder):hover {
+      color: #ffffff;
+      background: linear-gradient(180deg, #ffffff 0%, #e5e7eb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: underline;
+      text-decoration-color: rgba(255, 255, 255, 0.95);
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1.5px;
+    }
+    .author-block a.author-link-placeholder {
+      cursor: default;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+    }
+    .author-block a.author-link-placeholder:hover { color: var(--accent-color); }
+
+    .publication-links .button {
+      background-color: var(--background-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      font-weight: 600;
+      padding: 1.2rem 1.5rem;
+      margin: 0.25rem;
+      transition: var(--transition);
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    }
+    .publication-links .button.is-dark { background-color: var(--background-secondary); }
+    .publication-links .button:hover {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero.is-light { background-color: var(--background-secondary); }
+    .abstract-box {
+      background: var(--background-accent);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      text-align: justify;
+      border: 1px solid var(--border-color);
+    }
+    .abstract-box p { color: var(--text-secondary); }
+    .abstract-box strong { color: var(--text-primary); }
+
+    /* --- 3×3 grid: FlashPortrait-style rounded carousel per cell --- */
+    .baton-grid-section {
+      position: relative;
+      z-index: 1;
+      background: var(--background-primary);
+      padding: 2rem 0 4rem;
+      overflow: visible;
+    }
+    .baton-grid-head {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 1rem;
+    }
+    .baton-grid-head .mosaic-hint {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+    .baton-grid-layout {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 1fr;
+      gap: 14px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      align-items: stretch;
+    }
+    @media (max-width: 768px) {
+      .baton-grid-layout { grid-template-columns: 1fr; }
+    }
+    .baton-carousel-cell {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      min-height: 0;
+      height: 100%;
+    }
+    .baton-carousel-cell .carousel {
+      margin-bottom: 0;
+    }
+    .baton-grid-section .results-carousel .slider,
+    .baton-grid-section .results-carousel .slider-container,
+    .baton-full-carousel-section .results-carousel .slider,
+    .baton-full-carousel-section .results-carousel .slider-container {
+      min-height: clamp(120px, 18vw, 260px);
+    }
+    .baton-full-carousel-section .results-carousel .slider,
+    .baton-full-carousel-section .results-carousel .slider-container {
+      min-height: clamp(200px, min(56.25vw, 72vh), 720px);
+    }
+    .baton-grid-section .results-carousel,
+    .baton-full-carousel-section .results-carousel {
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .baton-full-carousel-section {
+      position: relative;
+      z-index: 1;
+      background: var(--background-primary);
+      padding: 2rem 0 4rem;
+      overflow: visible;
+    }
+    .baton-full-carousel-cell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    .baton-grid-section .results-carousel .item,
+    .baton-full-carousel-section .results-carousel .item {
+      margin: 0 6px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      padding: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .baton-slide-caption {
+      margin: 6px 0 0;
+      padding: 6px 8px 8px;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      font-family: "Century Gothic", CenturyGothic, "Apple Gothic", "Trebuchet MS", sans-serif;
+      color: var(--text-secondary);
+      text-align: left;
+      word-break: break-word;
+      flex: 0 0 auto;
+      white-space: pre-line;
+      height: 100px;
+      min-height: 100px;
+      max-height: 100px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      --caption-font-size: 0.82rem;
+      font-size: var(--caption-font-size);
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    .baton-slide-caption strong {
+      color: var(--text-primary);
+    }
+    .baton-slide-caption::-webkit-scrollbar {
+      width: 3px;
+    }
+    .baton-slide-caption::-webkit-scrollbar-thumb {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background-clip: padding-box;
+    }
+    .baton-slide-caption:hover {
+      scrollbar-color: rgba(148, 163, 184, 0.38) transparent;
+    }
+    .baton-slide-caption:hover::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.18);
+      border: 1px solid rgba(148, 163, 184, 0.38);
+    }
+    .baton-slide-caption::-webkit-scrollbar-button {
+      display: none;
+      width: 0;
+      height: 0;
+      background: transparent;
+    }
+    .baton-slide-caption::-webkit-scrollbar-button:single-button {
+      display: none;
+      width: 0;
+      height: 0;
+      background: transparent;
+    }
+    .baton-slide-caption::-webkit-scrollbar-button:start:decrement,
+    .baton-slide-caption::-webkit-scrollbar-button:end:increment,
+    .baton-slide-caption::-webkit-scrollbar-button:vertical:start:decrement,
+    .baton-slide-caption::-webkit-scrollbar-button:vertical:end:increment {
+      display: none;
+      width: 0;
+      height: 0;
+      background: transparent;
+    }
+    .baton-slide-caption::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .baton-grid-section .results-carousel .item video,
+    .baton-full-carousel-section .results-carousel .item video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
+      box-shadow: var(--shadow-md);
+      background: #000;
+      border: 1px solid var(--border-color);
+    }
+    .baton-grid-section .slider-navigation-previous,
+    .baton-grid-section .slider-navigation-next,
+    .baton-full-carousel-section .slider-navigation-previous,
+    .baton-full-carousel-section .slider-navigation-next {
+      width: 28px !important;
+      height: 28px !important;
+      margin-top: -14px !important;
+      background: rgba(15, 23, 42, 0.55) !important;
+      color: white !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35) !important;
+    }
+    .baton-grid-section .slider-navigation-previous:hover,
+    .baton-grid-section .slider-navigation-next:hover,
+    .baton-full-carousel-section .slider-navigation-previous:hover,
+    .baton-full-carousel-section .slider-navigation-next:hover {
+      background: var(--primary-color) !important;
+      transform: scale(1.08) !important;
+    }
+    .baton-grid-section .slider-navigation-next svg,
+    .baton-grid-section .slider-navigation-previous svg,
+    .baton-full-carousel-section .slider-navigation-next svg,
+    .baton-full-carousel-section .slider-navigation-previous svg {
+      width: 38% !important;
+    }
+    .baton-grid-section .slider-pagination,
+    .baton-full-carousel-section .slider-pagination {
+      padding: 0.2rem 0.35rem 0.15rem !important;
+      bottom: 1px !important;
+    }
+    .baton-grid-section .slider-pagination .slider-page,
+    .baton-full-carousel-section .slider-pagination .slider-page {
+      width: 5px !important;
+      height: 5px !important;
+      margin: 0 2px !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Full-width comparison: one prompt + 5 videos per carousel slide */
+    .baton-comparison-unit {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      min-width: 0;
+    }
+    .baton-comparison-prompt {
+      margin: 0 !important;
+      flex: 0 0 auto;
+      height: auto !important;
+      min-height: 72px;
+      max-height: 120px;
+    }
+    .baton-large-caption {
+      --caption-font-size: 0.82rem;
+      font-size: 0.82rem !important;
+      line-height: 1.45;
+    }
+    .baton-comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+    .baton-comparison-grid > .baton-comparison-cell:nth-child(-n+3) {
+      grid-column: span 2;
+    }
+    .baton-comparison-grid > .baton-comparison-cell:nth-child(n+4) {
+      grid-column: span 3;
+    }
+    @media (max-width: 1024px) {
+      .baton-comparison-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .baton-comparison-grid > .baton-comparison-cell:nth-child(-n+3),
+      .baton-comparison-grid > .baton-comparison-cell:nth-child(n+4) {
+        grid-column: span 1;
+      }
+    }
+    @media (max-width: 640px) {
+      .baton-comparison-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .baton-comparison-cell {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid transparent;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+    .baton-comparison-cell:hover,
+    .baton-comparison-cell.is-focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.45), var(--shadow-md);
+      transform: translateY(-1px);
+      z-index: 1;
+    }
+    .baton-method-label {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      z-index: 2;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 2px 7px;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+    .baton-full-carousel-section .results-carousel .item:has(.baton-comparison-unit) {
+      padding: 8px;
+    }
+    .baton-full-carousel-section .results-carousel .baton-comparison-grid video {
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+      border: 1px solid var(--border-color);
+      background: #000;
+    }
+    .baton-full-carousel-section .results-carousel:has(.baton-comparison-unit) .slider,
+    .baton-full-carousel-section .results-carousel:has(.baton-comparison-unit) .slider-container {
+      min-height: clamp(260px, 48vw, 620px);
+    }
+
+    /* Ablation: two-up static grid (no carousel) */
+    .baton-ablation-section {
+      position: relative;
+      z-index: 1;
+      background: var(--background-primary);
+      padding: 2rem 0 4rem;
+      overflow: visible;
+    }
+    .baton-ablation-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    .baton-ablation-cell {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      padding: 10px;
+    }
+    .baton-ablation-grid-11 {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+    .baton-ablation-grid-11 > .baton-ablation-video:nth-child(-n+8) {
+      grid-column: span 3;
+    }
+    .baton-ablation-grid-11 > .baton-ablation-video:nth-child(n+9) {
+      grid-column: span 4;
+    }
+    .baton-ablation-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .baton-ablation-grid-11 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .baton-ablation-grid-11 > .baton-ablation-video:nth-child(-n+8),
+      .baton-ablation-grid-11 > .baton-ablation-video:nth-child(n+9) {
+        grid-column: span 2;
+      }
+      .baton-ablation-grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 768px) {
+      .baton-ablation-grid-11,
+      .baton-ablation-grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .baton-ablation-grid-11 > .baton-ablation-video:nth-child(-n+8),
+      .baton-ablation-grid-11 > .baton-ablation-video:nth-child(n+9) {
+        grid-column: span 1;
+      }
+    }
+    .baton-ablation-video {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      background: #000;
+    }
+    .baton-ablation-video video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
+      background: #000;
+      border: 1px solid var(--border-color);
+    }
+
+    /* BibTeX: stack above grid carousels (no overlap) */
+    .baton-bibtex-section {
+      position: relative;
+      z-index: 2;
+      background: var(--background-primary);
+      padding-top: 2.5rem;
+      padding-bottom: 2rem;
+    }
+
+    .more-works-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+    .more-works-btn {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .more-works-btn:hover {
+      box-shadow: var(--shadow-lg);
+      background: var(--background-accent);
+      transform: translateY(-1px);
+    }
+    .more-works-dropdown {
+      position: absolute;
+      top: 120%;
+      right: 0;
+      width: 320px;
+      background: var(--background-secondary);
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    .more-works-dropdown.active { display: block; animation: fadeIn 0.2s ease-out; }
+    .dropdown-header {
+      padding: 15px 20px;
+      background: var(--background-primary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dropdown-header h4 { font-weight: 700; font-size: 0.95rem; margin: 0; color: var(--text-primary); }
+    .close-btn { background: none; border: none; cursor: pointer; color: var(--text-secondary); }
+    .close-btn:hover { color: white; }
+    .works-list { padding: 10px; }
+    .work-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 8px;
+      color: inherit;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .work-item:hover { background: var(--background-accent); }
+    .work-info h5 { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; color: var(--text-primary); }
+    .work-info p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; line-height: 1.3; }
+    .work-venue { font-size: 0.7rem; color: var(--accent-color); font-weight: 600; text-transform: uppercase; margin-top: 4px; display: inline-block; }
+
+    #bibtex-code {
+      background-color: var(--background-secondary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: 'Menlo', 'Monaco', monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      text-align: left !important;
+    }
+    #bibtex-code code { white-space: pre; text-align: left !important; display: block; }
+    .bibtex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .copy-bibtex-btn {
+      background: var(--background-accent);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .copy-bibtex-btn:hover { background: var(--primary-color); border-color: var(--primary-color); }
+
+    .footer {
+      background-color: var(--background-secondary);
+      padding: 3rem 1.5rem;
+      margin-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+    .footer p { color: var(--text-secondary); }
+    .footer a { color: var(--text-light); text-decoration: underline; }
+    .footer a:hover { color: var(--accent-color); }
+
+    .teaser-wrap video {
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      background: #000;
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-height: 520px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <script>
+    function toggleMoreWorks() {
+      const dropdown = document.getElementById('moreWorksDropdown');
+      dropdown.classList.toggle('active');
+    }
+    document.addEventListener('click', function (event) {
+      const container = document.querySelector('.more-works-container');
+      const dropdown = document.getElementById('moreWorksDropdown');
+      if (container && !container.contains(event.target)) {
+        dropdown.classList.remove('active');
+      }
+    });
+    function copyBibTeX() {
+      const code = document.getElementById('bibtex-code').innerText;
+      navigator.clipboard.writeText(code).then(function () {
+        const btn = document.querySelector('.copy-bibtex-btn .copy-text');
+        if (btn) { btn.innerText = 'Copied!'; setTimeout(function () { btn.innerText = 'Copy'; }, 2000); }
+      });
+    }
+  </script>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">Baton: Explicit Semantic Blueprints for Joint Video-Audio Generation</h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://github.com/Francis-Rings" target="_blank" rel="noopener">Shuyuan Tu</a><sup>1,2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=Ypu45nIAAAAJ&hl=zh-CN" target="_blank" rel="noopener">Qi Tian</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://pnotp.github.io/" target="_blank" rel="noopener">Zihan Yang</a><sup>1</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=1xTR6qoAAAAJ&hl=en" target="_blank" rel="noopener">Yue Wu</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=FGiWOIAAAAAJ&hl=zh-CN" target="_blank" rel="noopener">Xintong Han</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=gsOklKAAAAAJ&hl=zh-CN" target="_blank" rel="noopener">Weijie Kong</a><sup>2</sup>,
+              </span>
+              <br>
+              <span class="author-block">
+                <a href="https://scholar.google.com.hk/citations?user=lHbXg_0AAAAJ&hl=zh-CN" target="_blank" rel="noopener">Jiangfeng Xiong</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=nF_klRIAAAAJ&hl=zh-CN" target="_blank" rel="noopener">Jian-Wei Zhang</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=igtXP_kAAAAJ&hl=en" target="_blank" rel="noopener">Zhao Zhong</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=FJwtMf0AAAAJ&hl=en" target="_blank" rel="noopener">Liefeng Bo</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=7t12hVkAAAAJ&hl=en" target="_blank" rel="noopener">Zuxuan Wu</a><sup>1</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=f3_FP8AAAAAJ&hl=en" target="_blank" rel="noopener">Yu-Gang Jiang</a><sup>1</sup>
+              </span>
+            </div>
+
+            <div class="is-size-5 publication-authors" style="margin-top: 12px; font-size: 0.95rem !important; color: var(--text-secondary);">
+              <span class="author-block"><sup>1</sup>Fudan University</span> &nbsp;  
+              <span class="author-block"><sup>2</sup>Hunyuan Foundation Model Team, Tencent Inc</span>  
+              </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="https://arxiv.org/pdf/YOUR_ARXIV_ID.pdf" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/YOUR_ARXIV_ID" target="_blank" rel="noopener" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="ai ai-arxiv"></i></span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content abstract-box">
+            <p>
+              Current open-source diffusion models struggle to generate stable and synchronized audio-visual content, particularly in scenarios demanding complex semantic reasoning. The root cause is that existing methods rely on coarse text embeddings from off-the-shelf encoders to guide audio-video denoising, which discards fine-grained semantics and, critically, lacks a shared long-horizon plan, leading to uncoordinated denoising trajectories and fragile cross-modal alignment.
+              We propose Baton, the first framework that introduces explicit semantic planning into joint video-audio generation. Our key insight is that complementing coarse text guidance with semantically rich, modality-aware planned tokens, jointly reasoned and mutually aligned before denoising, can simultaneously restore fine-grained semantic detail and establish a shared blueprint that coordinates both audio and video denoising trajectories. 
+              Concretely, Baton first introduces the VA-Planner, a multimodal language model equipped with dual semantic alignment towers, where learnable queries cross-attend to both video and audio features to produce a pair of semantically aligned video and audio planned tokens as keyframe-level blueprints. 
+              These planned tokens are injected into the diffusion backbone via cross-attention layers, providing temporally grounded guidance complementary to coarse text embeddings. Since planned tokens do not share one-to-one spatial-temporal correspondence with diffusion latents, we further propose Relative Semantic RoPE, a relative positional encoding that maps planned tokens and latents into a shared spatial-temporal coordinate frame, enabling each latent to accurately attend to its positionally corresponding semantic cues. Experiments on benchmarks show the effectiveness of Baton both qualitatively and quantitatively.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="baton-grid-section hero is-small">
+    <div class="hero-body" style="padding-top: 1.5rem; padding-bottom: 0;">
+      <div class="container is-widescreen">
+        <div class="baton-grid-head">
+          <h2 class="title is-3 has-text-centered" style="width: 100%; border: none; display: block; padding-bottom: 0;">Qualitative results</h2>
+          <!-- <p class="mosaic-hint">3×3 grid: each clip advances when it finishes. If you pause with the player controls and move the pointer out of the tile, it waits 3s then skips to the next clip. If you press play, it keeps playing this clip until it ends. Hover no longer forces pause/play.</p> -->
+        </div>
+        <div class="baton-grid-layout">
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-1" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/1.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a vast barren beach under a pale overcast sky with haze obscuring the flat horizon, a young man with dark messy hair lies face down on the sand, wearing a thick brown hooded wool coat, sand clinging to his clothes and skin. He props himself on his elbows, looking forward. In the far background, a column of sand explodes upward among silhouetted soldiers. The young man flinches in terror and clutches his head while successive blasts draw closer, sending towering columns of sand into the air. A harsh, aggressive soundscape with deep rumbles and piercing screeches builds as the bombardment rapidly approaches his position. Close-up, low angle, rule-of-thirds composition. Natural diffused overcast daylight with soft shadows. Desaturated, monochromatic palette of beige, tan, and muted olive green with a cool color temperature. Gritty realism, tense tone.<br><br><strong>Audio Prompt</strong>: On a windswept open beach, continuous artillery explosions rumble and crash, growing progressively louder and closer. The blasts intensify from distant muffled thuds into deafening concussive roars, each one shaking the ground harder than the last. Sand and debris scatter and rain down with increasing violence. Beneath the relentless bombardment, rapid shallow breathing and a choked gasp of terror from a soldier [Speaker A] are barely audible.</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/2.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a indoor martial arts gym with yellow padded bars along the wall,  and cool fluorescent overhead lighting, two bald men of Middle Eastern descent stand facing each other. The first, with a short beard, wears a black chest protector over a white t-shirt and remains stationary. The second, with a darker skin tone in a dark polo shirt, stands to his right as the instructor. The instructor delivers a quick punch to the first man's upper body. The camera shifts focus to the first man, who absorbs the hit. The instructor asks him a brief question; the first man nods and responds. The instructor then resumes speaking, using hand gestures to continue his explanation as the instructor looks toward the camera. Medium shot, eye-level, rule-of-thirds composition. Cool-toned overhead lighting with high contrast between brightly lit faces and deep surrounding shadows. Neutral palette of black, grey, and white accented by yellow padded bars and cool blue ambient light. Observational documentary style, focused tone.<br><br><strong>Audio Prompt</strong>: In a gym with faint ambient echo and a low-level room tone, a mature man [Speaker A] speaks in a steady, instructional tone: \"Think about the idea of short distance power. If someone like this suddenly tries to headbutt me, one, I can hit him." A sharp, percussive thud of a fist striking a padded chest protector rings out immediately after. A brief pause, then [Speaker A] asks in a calm, slightly concerned tone: \"You okay?" Another man [Speaker B] replies affirmatively: \"Yeah."  [Speaker A] continues in the same steady, instructional tone: \"And he's not headbutting."</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/3.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On an outdoor residential patio during an overcast day, with green grass, trees, a house facade in the background, and clusters of pink and white balloons creating a festive atmosphere, a middle-aged man with dark hair in a brown double-breasted suit, white shirt, and patterned tie stands facing a boy wearing a light brown suit jacket over a white shirt with a brown-and-black striped tie. Between them sits a table piled with wrapped gifts and chairs draped in leopard-print cloth. The middle-aged man speaks seriously, looking into the boy's eyes, then gestures emphatically toward the boy. The boy stands still and attentive. Naturalistic drama with a tense tone.<br><br><strong>Audio Prompt</strong>: In a outdoor, a mature man [Speaker A] speaks in a inquisitive tone: \"What options" A younger man [Speaker B] responds in a neutral tone: \"Other offers." The first man [Speaker A] replies with a tone of mild surprise: \"You've had other offers" The second man [Speaker B] states in a neutral tone: \"Travis from Channel 87 wants to hire me full-time." The first man [Speaker A] asks in a slightly incredulous tone: \"To do what"</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/4.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In an outdoor courtyard with a textured stone wall, green potted plants, and out-of-focus trees in the background, two women stand on the left facing an older man seen from behind on the right. The blonde woman on the far left has shoulder-length blonde hair and wears a black leather double-breasted blazer with silver buttons over a white collared blouse, hoop earrings, and a delicate necklace. Beside her, the brown-haired woman has long wavy light brown hair in a half-up bun and wears a red and white striped sweater with a patterned red neck scarf and hoop earrings. The older man has short gray hair and a beard, wearing a dark coat over a patterned ascot. The brown-haired woman in the red striped sweater speaks first, holding a subtle knowing smile. Then the blonde woman in the black blazer begins to speak, becoming animated and extending her right hand toward the man to emphasize her point, breaking into a wide smile. The brown-haired woman shifts into a broad, amused grin. Throughout, the older man remains still, listening attentively to both women. Naturalistic, cinematic, pleasant tone.<br><br><strong>Audio Prompt</strong>: : In a quiet outdoor setting with a faint, low-level room tone, a young woman [Speaker A] speaks in a slightly exasperated tone: \"Please. He's always forgetting important stuff." A second young woman [Speaker B] responds in a light, teasing tone: \"Like our names." A soft, breathy chuckle is heard from [Speaker A]. [Speaker B] continues in a calm tone: \"This isn't anything new. Anything we need to be worried about."</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-2" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/5.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a brightly lit residential porch with blurred green foliage in the background, an elderly man with short white hair swept back, a full white goatee and mustache, wearing a dark brown corduroy jacket over a dark plaid collared shirt with a blue and white patterned bandana at his neck, stands between two figures — a blurred shoulder on one side and a woman seen from behind with pulled-back blonde hair, glasses, and a light pinstriped shirt on the other. He speaks first with a serious, concerned expression, brow furrowed, leaning slightly forward. He then raises his right hand and emphatically taps his extended index finger against his right temple, his mouth opening wide in a sudden. His demeanor then shifts — he lowers his hand, looks down pensively, and when he looks back up, his face softens into a gentle, fond smile that turns into a quiet chuckle with a slight nod. <br><br><strong>Audio Prompt</strong>: : In a quiet indoor setting with a faint, low-level room tone, a mature man [Speaker A] speaks in a calm, conversational tone: \"You work with Ben?\" A mature woman [Speaker B] responds in a neutral, matter-of-fact tone: \"I do.\" The man continues, his voice slightly rising in pitch: \"So you're a cop?\" The woman replies, her tone measured and slightly corrective: \"Well, I'm a detective, right.\" The man responds with a drawn-out \"Ah,\" then says in a pleased, slightly relieved tone: \"Well, good. Hahaha, you know"</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/6.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a hospital room with grey tiled walls, large windows letting in natural daylight, IV stands, and a blue monitor, a white female patient with long reddish-brown hair lies in a hospital bed on the right, covered by a blue patterned blanket, wearing a light-colored gown over scrubs. She grimaces in discomfort with her mouth open wide.  In the adjacent bed, a young woman with shoulder-length blonde hair and bangs, wearing a white polka-dot hospital gown and a wristband, slowly sits up. She turns toward the distressed older woman, her expression shifting from concern to surprise as their eyes meet. To the left, an out-of-focus male nurse in green scrubs and a guard attend to her. Cool-toned palette of blues, greys, and whites contrasted by warm skin tones and reddish-brown hair. Realistic drama with a tense tone.<br><br><strong>Audio Prompt</strong>: : In a quiet indoor setting with a faint, low-level room tone, a mature woman [Speaker A] speaks in a panicked, high-pitched voice: \"They're gonna eat my face off." A mature woman [Speaker B] responds in a calm, steady tone: \"Oh my god. Okay, okay." A soft, melancholic piano melody begins to play in the background. [Speaker B] continues, his voice still anxious: \"Who are they" The woman [Speaker A] asks in a neutral, inquisitive tone: \"The flies"  [Speaker B] replies in a strained voice: \"And how do you know they're gonna eat you"</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/7.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a flat-topped, blocky ice ledge in a prehistoric landscape of layered ice terraces and snow-covered ground, with sparse thin trees and a dramatic twilight sky of pink, purple, orange, and blue clouds behind, a large greyish-blue pterosaur with a purplish neck, white belly, long sharp-toothed snout, yellow eyes, tall dark curved crest, and large wings with warm orange-brown-white undersides stands with a wide-eyed, open-mouthed expression of shock.  A small dark pterosaur stands behind the big one. The expression of the large greyish-blue pterosaur shifts through annoyance to a sly smile. It briefly spreads one wing wide, then settles into a thoughtful pose, resting its head on its clawed hand while gazing off-screen to the right. Its expression turns to concern, mouth opening slightly. Soft, diffused twilight lighting with no harsh shadows. Stylized 3D animation with warm pastel pinks and oranges in the sky contrasting cool blues and whites of the icy environment. <br><br><strong>Audio Prompt</strong>: In a quiet outdoor setting with a faint, low-level room tone, a mature man [Speaker A] speaks in a calm, conversational tone: \"Yeah, well, uh, maybe. Oh, but first, we just need to check the area. There's plenty of folks in a very bad way after a storm like this, don't you know?".</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/8.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: At dusk in a desolate clearing beside a rustic log cabin with a thatched roof, shuttered windows, and barrels leaning against its side, under bare trees and a dim overcast sky, a bearded white man with short dark hair, wearing a loose brown shirt and matching pants, squats before a small crackling campfire within a stone ring on dry grass. To his right stands a slender white teenage boy with curly dark hair in an off-white Henley shirt and light trousers, holding a crumpled grey cloth. The man rises from his squat, reaches out with both hands, and takes the cloth from the boy. He turns toward the fire, steps forward, and bends down to drape the cloth over the burning logs. Smoke rises. The boy stands still, watching intently. The man then picks up a long wooden poker from the ground and pokes the smoldering bundle beneath the cloth.<br><br><strong>Audio Prompt</strong>: A quiet outdoor dusk atmosphere with faint wind rustling dry grass. A small campfire crackles and pops within a stone ring. The soft rustle of cloth being handled. The crackling intensifies briefly as the cloth is draped over the fire, then dulls into a low, muffled smolder. A wooden poker scrapes against stone and prods the embers, stirring hissing smoke.</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-3" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/9.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: At the water's edge facing the Manhattan skyline, an elderly man with white hair stands with his back to the camera. He wears a tan straw fedora, a dark zip-up bomber jacket over a maroon t-shirt, dark blue athletic track pants. He turns slightly and throws something small from his right hand toward the left; the object arcs out of frame before landing. He watches its trajectory off-screen. He then walks forward slowly along the water's edge, turning more toward the viewer with a thoughtful, calm expression as a seagull glides across the frame between him and the skyline. <br><br><strong>Audio Prompt</strong>: In an outdoor waterfront setting with ambient waves lapping against the shore and a gentle breeze, a small object splashes into the water off-screen. A seagull cries as it glides past. Then a man [Speaker A] with a deep, gravelly voice speaks in a slow, deliberate, and slightly weary tone: /"So, you fed a little cheese to the cop, so what"</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/10.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: Inside a stone-walled corridor with a paneled wooden door, a green-lit control panel on the wall, and a small vine plant growing nearby, under soft overhead lighting, five armored figures gather. On the right side, a clone in dark grey-black heavy armor with red accents and a backpack bearing a red emblem stands beside a taller clone in dark grey-black armor with a glowing orange-yellow eye slit. On the left side, a clone with grey-white armor and a yellow-orange visor, carrying a backpack with twin antennae, stands nearest to the door, operating the control panel. Behind him, the Commander — identifiable by his silver-faceplated helmet with yellow visor and grey armor with red shoulder markings — gestures and issues orders to the group. A lighter grey-white armored figure with a red visor stands behind the Commander. The two dark-armored clones on the right enter the doorway one after another. Then the twin-antennae backpack clone by the door steps through. The Commander follows next, striding through the doorway. Finally, the lighter grey-white armored figure  behind the Commander trails him through the door last. 3D CGI animation style.<br><br><strong>Audio Prompt</strong>: In a quiet indoor environment, a mature man [Speaker A] speaks in a calm, steady tone: /"You two, clear the upper levels." He [Speaker A] then continues in a neutral tone: /”Jack! We'll take the main floor and below. Droid, you're sticking with me.”. A low, mechanical whirring sound begins and continues as the dialogue concludes.</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/11.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In an indoor setting with cool lighting and blurred figures in the background, a man with short brown hair swept back and light stubble sits in profile on the  right frame, wearing a charcoal grey suit jacket, matching shirt, and a dark patterned tie. He looks toward the right with a knowing smirk. He slowly raises his right hand, bringing a faceted rocks glass containing dark amber liquid to chest height, holding it steady between himself and the unseen person. He then lowers the glass out of view, his expression softening as his mouth parts, transitioning from a tense stillness to active engagement as if about to speak. Cinematic realism.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting, a mature man [Speaker A] speaks in a low, gravelly, and serious tone: "Show that sheet on TV." A soft, melancholic piano melody begins to play in the background. After a brief pause, the same man [Speaker A] speaks again in a steady, neutral tone: "About it, Walker."</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/12.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a spacious modern indoor lounge with multi-tiered wooden seating, a bar area with a blue sign, and walls decorated with colorful geometric shapes, a young Caucasian woman with short curly black hair and light eyes, wearing a black button-up jumpsuit over a black top. She faces others watching her and speaks expressively. She then holds up a yellow slip of paper. Behind her, three people react — the one on the far left in a deep red-grey plaid shirt reaches into a pocket and mimes pulling something out and comes up a tiny slip of paper. The other two — one in a grey hoodie and one in a black apron over a long-sleeved top with muted orange sleeves — each pull out and hold up a dark blue larger slip of paper. Medium shot, eye-level, rule-of-thirds composition. Soft diffused studio lighting from overhead fixtures. Warm wood-toned neutrals contrasted with pops of red, orange, green, and blue from the decor. Naturalistic drama, conversational tone.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a young woman [Speaker A] speaks in a fast, excited, and conspiratorial tone: /"We also asked R and D to build us a mock-up, and it's so small and cheeky, you didn't even notice we all had one. Right."</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-4" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/13.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a dimly lit interior, a close-up shows hands using a knife and fork to slice through a medium-rare steak on a white square plate. After cutting off a piece, the camera tilts upward to reveal a Caucasian woman with long wavy reddish-blonde hair, blue eyes, and fair skin, wearing dark clothing over a collared shirt. She lifts the piece of steak with the fork, brings it to her mouth, and chews slowly. After swallowing, her gaze lowers briefly, then she raises her head and stares intensely forward. Cinematic realism.<br><br><strong>Audio Prompt</strong>: A knife sawing through steak with a soft, wet slicing sound against the plate. A fork scrapes briefly. Quiet, slow chewing follows. After a pause, a single melancholic piano note rings out.</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/14.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: The shot opens focused on a coastal village — orange-tiled roofs, a blue bay with moored white yachts — framed by out-of-focus green foliage and a light fabric awning in the foreground. The focus shifts as a middle-aged Caucasian woman with dark brown wavy hair in a low ponytail enters from the left, wearing small gold drop earrings, a white scoop-neck t-shirt with a small red heart graphic, and a woven strap bag over her shoulder. She approaches a large bundle of dried red chili peppers and green herbs hanging from strings, reaches out with both hands to gently touch them, then brings her face close. She closes her eyes and takes a slow, deliberate breath to inhale their scent. After a moment she pulls back, turns to the left, and walks down a slight incline away from the camera into an outdoor market path, passing other indistinct figures. Cinematic realism.<br><br><strong>Audio Prompt</strong>: A gentle, melodic instrumental piece plays, featuring a prominent flute-like instrument and soft, rhythmic accompaniment, creating a calm and slightly melancholic atmosphere. The music is layered over the ambient sounds of a public outdoor space, including the indistinct murmur of people talking.</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/15.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In front of a solid black background, a young East Asian man with short black hair and a black t-shirt sits behind a light wood cutting board loaded with a cheeseburger, fried chicken pieces, pizza slices, french fries, and two bowls — one of ketchup, one of yellow mustard sauce. He looks at the camera, then lowers his gaze toward the food in contemplation. He wears a black-glove and takes a red Coca-Cola can. He takes the can, raises it, and drinks from the top. <br><br><strong>Audio Prompt</strong>: In a close-up environment, the air is filled with the loud, wet, and rhythmic sounds of vigorous chewing and slurping, accompanied by distinct crunching noises as something hard is bitten into. The sounds are intimate and visceral, suggesting the consumption of a crunchy, moist food item.</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/16.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: At a indoor party with large windows showing greenery outside, beige curtains, a silver champagne ice bucket, bowls of fruit, and pink roses on a low table, two blurred female figures frame the foreground on the left and right edges of the shot. Between them in focus, two middle-aged white men stand near a serving table. The man on the left in a blue-grey plaid suit jacket over a light shirt leans forward energetically and grabs the right hand of the man on the right in a dark navy suit, white shirt, and blue-black striped tie. They clasp hands and the plaid suit man laughs boisterously, mouth wide open. The navy suit man joins in, throwing his head back and swaying with uncontrollable laughter. To the left, a white woman with brown hair in an updo, wearing a sleeveless floral A-line dress, stands there, holding a drink in her left hand. The plaid suit man breaks free from the handshake and points excitedly at something off-screen, then both men raise their hands for a high-five. Cinematic realism.<br><br><strong>Audio Prompt</strong>: In a lively indoor setting with a low murmur of background conversation, a man [Speaker A] lets out a sudden, loud, and playful "Ah!" followed by hearty laughter. The second man [Speaker B], with a deep, amused voice, says, "This guy's great." A first man [Speaker A], speaking in a casual, friendly tone, replies, "All time, man." The second man [Speaker B] then says, "I bought," as a sharp, distinct slap sound is heard.</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-5" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/17.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a paved walkway outside a modern glass-fronted building with white pillars, a young Caucasian woman with long light-brown hair in one braid, wearing a floral sleeveless dress, performs on an orange electric violin with intense concentration. Pedestrians stroll past, with a man in a blue LA baseball cap watching intently. The violinist moves along the sidewalk as the handheld camera tracks her. Observational documentary style, enthusiastic tone.<br><br><strong>Audio Prompt</strong>: A melancholic and expressive instrumental piece plays, led by a solo violin with a rich, emotive tone. The violin's performance is accompanied by a gentle, rhythmic piano melody and a soft, steady bass line, creating a poignant and reflective atmosphere. The music unfolds with a slow, deliberate tempo, evoking a sense of longing and introspection.</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/18.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a warmly lit restaurant, a close-up high-angle shot centers on a bright orange ceramic hot pot filled with clear, steaming broth atop a dark wood table. The camera moves to a large black tray laden with shells, whole hard-boiled eggs, firm tofu pieces, and other vegetables. A pair of black chopsticks enters the frame, delicately picks up a orange shell, and lifts it toward the simmering broth as steam rises prominently. The chopsticks place the shell into the boiling liquid among the meaty chunks already cooking in the soup.<br><br><strong>Audio Prompt</strong>: A lively instrumental music piece plays, featuring a prominent brass section, a steady drum beat, and a groovy bassline, creating an upbeat and energetic atmosphere.</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/19.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a bright sunlit beach, the colossal bow of a weathered black-hulled cargo ship with a faded red waterline plows through the sandy shore, pushing a massive wave of sand forward. The sand engulfs a lone light-blue patterned beach umbrella on the left and a wooden lifeguard chair on the right with a lifebuoy attached. As the ship advances, the camera slowly tilts upward along the sheer dark metal hull — revealing rust stains and scratches — rising from the chaotic destruction below to the pointed tip of the bow against a vast clear cyan sky, with the sun casting a subtle lens flare. <br><br><strong>Audio Prompt</strong>: Set in a open environment with a low, continuous rumble of heavy machinery or a large vehicle, a deep, sustained mechanical hum fills the soundscape. The sound of a powerful engine idling is prominent, layered with the subtle, rhythmic clanking of metal components. A sharp, metallic scraping noise cuts through the ambient drone, followed by a brief, high-pitched squeal. The engine sound then shifts, increasing in pitch and intensity. The entire scene is dominated by industrial, mechanical sounds, with no speech or music present.</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/20.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: From a high-angle top-down view over a dark-brown wooden workspace, a pair of light-skinned male hands carve a small pale yellowish block shaped like part of a dog's body. His left hand grips the block firmly while his right hand holds a black-handled metal chisel, shaving away thin layers of wood in long curling shavings that accumulate around him. He turns the piece to carve from different angles, revealing a simple sketch drawn into its surface. In the blurred background, several finished painted Basset Hound figurines stand on a wooden board. <br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a series of sharp, high-pitched scraping and scratching sounds occur in quick succession, resembling a hard object being rubbed against a rough surface. These abrasive noises are followed by a brief, soft rustling.</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-6" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/21.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: From behind a stationary light blue car with white plates, the vehicle begins moving slowly forward along a brick-paved downtown street. Multi-story red-brown and beige commercial buildings line both sides, adorned with ornate black gas lamps; The sky is overcast. The car proceeds straight ahead, eventually disappearing toward a distant intersection with traffic lights. The shot transitions from a close-up to a wide establishing shot via a slow zoom-out. High-angle, centered composition initially focused on the vehicle before revealing the full street context with strong leading lines toward the horizon. Cinematic realism.<br><br><strong>Audio Prompt</strong>: A low, ominous, and suspenseful instrumental music track plays throughout, featuring deep, pulsating synthesized bass tones and a slow, building rhythmic pattern that creates a tense and dramatic atmosphere. The music swells in intensity, with layered electronic textures, but no speech or other distinct sounds are present.</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/22.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a multi-level corporate office high above a city skyline, a Black man with short black hair, wearing a dark blue suit jacket over a white collared shirt unbuttoned at the top and dark trousers, steps off an staircase bordered by angular wooden partitions onto the grey-carpeted main floor. He glances up briefly, then walks with a confident stride toward the right. The camera pans right, tracking him as he passes a woman with long brown hair at a desk. She notices him, stands up, and speaks to him as he walks by. He continues past open-plan areas toward glass-walled offices overlooking a dense urban skyline. He approaches one office where a bald white man holding a white cup stands talking to another man seated behind a large desk, while a woman in a blazer and a women’s tailored pant stands nearby with arms crossed. Cinematic realism.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a woman [Speaker A] speaks in a calm, slightly urgent tone: "He's in a meeting." A man [Speaker B], whose voice is deeper and more assertive, responds: "I'll tell you and your lawyer at the same time. Your attempted purchase of Enzy Novo has hit a snag."</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/23.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: At water level on the open ocean, a small translucent jellyfish-like creature with an iridescent, dome-shaped float drifts in the foreground, bobbing with deep blue undulating waves. The setting sun hangs low on the horizon behind thin clouds, casting a warm yellow-orange gradient across the sky and a golden path over the water's surface. The camera slowly tilts up from the drifting creature, revealing the expansive rippling sea. A dark silhouette resembling a bird sweeps swiftly across the sky above the water. The camera then tilts back down to settle on the iridescent float against the sunset backdrop. Golden-hour backlighting illuminates wave edges and the translucent float, creating dramatic contrast. Deep cool blues of the ocean contrast with warm saturated yellows and oranges of the sunset. Naturalistic cinematic style, serene and meditative tone.<br><br><strong>Audio Prompt</strong>: A dramatic orchestral score plays, featuring sweeping strings and a deep, resonant bass that creates a sense of suspense and grandeur. The music swells and then recedes slightly, maintaining a tense, cinematic atmosphere. Over this, the distinct squawking of a bird—likely a seagull—can be heard, its calls sharp and insistent. The music then fades out, leaving only the bird's squawks for a moment.</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/24.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In the driver seat of a moving car, a fair-skinned white woman with long wavy reddish-blonde hair blowing slightly in the wind wearing a grey heathered long-sleeved shirt. She stares forward with a pensive, vacant expression. As blurred suburban scenery passes the open window, she slowly brings her left hand to her face, pressing fingers to her forehead then running them back through her hair. After a moment, she leans her elbow on the open window frame, propping her head against the side of her hand at her left temple. Her eyes open but holding a look of deep concern and exhaustion as the drive continues. Cinematic realism, somber tone.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a mature woman [Speaker A] speaks through a phone speaker in a tinny, slightly distorted voice with a shaky, distressed tone: /"Hi honey, how are you?" A young woman [Speaker B] responds in a calm, concerned tone: /"Hi honey, can I um... can I talk to Corey?" [Speaker A] replies in a worried, urgent tone: /"Sweetheart, what is it? Are you okay?"</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-7" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/25.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a wide, murky-green river lined with dense green foliage and leafy trees forming a natural canopy, an older man with short graying hair and glasses sits in a small boat. He wears a beige t-shirt under a yellow and black life jacket with a microphone clipped near him, holding a paddle. He looks at the camera and talks expressively, turns slightly away, then turns back continuing his dialogue. He gestures by pointing forward and then outward across the water's surface.<br><br><strong>Audio Prompt</strong>: In an outdoor setting with the gentle gurgling and splashing of water, a mature man [Speaker A] speaks in a steady, conversational tone: /"on the waters. Now, what do I want to buy? Well, here I am in Ohio, on the Little Miami. It's still as can be."</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/26.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In an outdoor residential setting with a two-story brick house in the distance, green grass with scattered dry leaves, tall pine trees, and a lone wooden bench on the lawn, a white man with dark brown hair in a tight ponytail and a trimmed full beard stands wearing a teal-blue denim button-down shirt with sleeves rolled to his elbows. In the foreground, two out-of-focus figures frame the shot — the outermost showing only light blonde long hair at the edge of the frame, and the second revealing a short blonde-haired head and shoulder. He looks seriously at them, then begins to speak, becoming more animated. He raises both hands in front of his chest — his right hand clenched into a fist and his left hand open with palm facing up — and repeatedly strikes his right fist into his left palm to emphasize his points. His expression shifts from serious concentration to passionate explanation. Cinematic realism.<br><br><strong>Audio Prompt</strong>: In a quiet outdoor setting with a faint ambient breeze, a mature man [Speaker A] speaks in an agitated, urgent, and conspiratorial tone: /"Who they really work for, Aaron. They launder drug money." His hands clap together sharply for emphasis. /"Drug money, Aaron," — another firm hand slap — /"for the Navarro drug cartel." Rhythmic tapping sounds punctuate his words as he gestures intensely throughout.</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/27.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: From a high-angle overhead view on a polished stainless steel countertop, a pair of light-skinned male hands work methodically. One hand holds a large wooden spatula, stirring a creamy off-white sauce bubbling gently in a silver frying pan atop a red and grey portable induction stove. The other hand operates a black electric spice grinder grinding black pepper directly onto the hot sauce. He stirs to incorporate the spices, pausing after grinding doses. Surrounding items include metal tongs, and two glass jars of orange and red granulated seasonings.<br><br><strong>Audio Prompt</strong>: In a indoor environment, the high-pitched whirring of a power tool cuts through the air, its mechanical hum a constant companion to the scene. Intermittent rustling noises ripple through the space. A sharp snapping sound punctuates the moment, followed by a quick succession of crisp tearing sounds. Then, a sustained scraping noise lingers, dragging across the silence.</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/28.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a dimly lit indoor space with blurred framed pictures on a neutral wall behind, an over-the-shoulder close-up frames a young Caucasian woman with long dark brown hair, reddish lipstick, and a small stud earring, wearing a blue blazer over a black collared shirt. She faces a bald Black man seen only from behind in a grey collared shirt. Her mouth is slightly open as if speaking, then she pauses, maintaining intense eye contact with deep concentration. She slowly raises her right hand, palm inward, and gently places it against the side of his head, cupping it near his ear and neck. Her gaze remains fixed on him, lips slightly parted. Cinematic realism.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a mature woman [Speaker A] speaks in a soft, intimate, and breathy tone: /"I can touch you." A gentle, slow brushing sound of skin against skin accompanies her words. She continues in the same gentle manner: /"Do you like that when I touch you?" The soft, rhythmic sound of her hand lightly caressing continues underneath her voice.</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-8" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/29.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: Inside a brightly lit boxing ring before a dimly lit crowd, a muscular Black man with a mohawk and beard, wearing white trunks and red gloves, faces off against a muscular white man with dark curly hair and a cut on his forehead, wearing red gloves and blue-red-white striped shorts. The Black boxer attacks with a rapid-fire combination of punches. His opponent ducks and blocks the flurry. They circle each other exchanging jabs, hooks, and crosses, sweat glistening under harsh overhead spotlights. After an aggressive sequence, the white boxer lands a powerful right hook to the head. A referee in a light blue shirt steps between them, placing hands on their shoulders to break up the clinch. Gritty, realistic 1980s action film style with film grain and motion blur.<br><br><strong>Audio Prompt</strong>: Set in a chaotic, high-energy environment with a driving, rhythmic hip-hop beat playing in the background, a series of sharp, percussive impact sounds and grunts suggest a physical altercation. The crowd [Speaker A], speaking in an aggressive, confrontational tone, shouts: /"He's so bad! He's so bad! He's so bad!" His voice is strained and forceful. Another part of crowd [Speaker B], also speaking in an aggressive tone, retorts: /"Why he so bad? Yeah" A man [Speaker C] shouts: /"Enough!" The background music and sound effects continue throughout, creating a tense and combative atmosphere.</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/30.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a cracked asphalt driveway in a residential backyard with a white-sided house and garage on the left, a tall evergreen tree, and a chain-link fence, a young man with short blondish-brown hair in a black t-shirt and black athletic shorts with red and white stripes stands facing away from the camera. At the far end of the driveway, another young man in a camouflage baseball cap, brown and green plaid flannel shirt, and light-wash denim pants waits. The player in black passes the orange basketball to the flannel-shirted player, who catches it and passes it back. The flannel-shirted player then moves in to steal the ball, and the player in black plants his feet and holds a stationary defensive stance, shielding the ball with his body.<br><br><strong>Audio Prompt</strong>: Set in an outdoor environment with the faint, continuous chirping of birds in the background, a young man [Speaker A] speaks in a calm, neutral tone: /"here." A soft thud is heard, followed by the sound of a ball being dribbled on a hard surface. Another young man [Speaker B] speaks in a steady, neutral tone: /"Alright." The dribbling sound continues, rhythmic and clear, as the ball bounces on the ground.</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/31.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In an indoor studio with a white backdrop curtain on one side, a black-painted wall on the other, and shelving with colorful props, a middle-aged Caucasian man with short brown hair sits at a light-yellow table wearing a grey t-shirt with a red logo. In front of him sit a cardboard box. He holds one blue LED yo-yos, drops it. As the yo-yo spins through the air, a second person's hand enters the foreground and catches it — the yo-yo now glowing with purple lights. The man resumes talking and gestures toward the camera. The second man then throws the yo-yo back to the first man.<br><br><strong>Audio Prompt</strong>: In a workshop environment, the high-pitched whirring of a power tool cuts through the air. A sharp snapping sound punctuates the moment, followed by a quick succession of crisp tearing sounds. A mature man [Speaker A] speaks in a instructional tone: /"Oh, that was, that was angled back at me. So I'm gonna angle it forward just a little bit so it'll go to him. There we go. He's gonna toss it back. And you can't be hesitant when you put your hand"</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/32.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In an indoor martial arts dojo with red and black floor matting, black acoustic-paneled walls bearing large circular white dragon emblems, and a red ceiling with fluorescent tube lights, a Caucasian bold man shaved on the sides, blue eyes. He wears a dark grey t-shirt with a small microphone clipped on. He also wears a black watch. He speaks directly to the camera with expressive gestures, then demonstrates a series of punches — starting with a jab, transitioning to an uppercut and a hook. <br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a mature man [Speaker A] speaks in a steady, instructional tone: \"When I throw that punch, I don't want you to hook punch all the way, all the way across your body. I want you to throw that hook punch and it goes boom when it hits like."</p></div>
+            </div>
+          </div>
+          <div class="baton-carousel-cell">
+            <div id="baton-carousel-9" class="carousel results-carousel">
+              <div class="item item-video1"><video poster="" controls muted playsinline preload="metadata"><source src="videos/33.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: In a spacious gymnasium with polished wooden floors, off-white walls, an American flag, and folding tables in the background where numerous blurred figures mill about, a middle-aged Caucasian man with short gray hair in a dark suit jacket over a white collared shirt and tie walks steadily forward. To his left, a younger woman with brown hair pulled into a high bun, wearing small earrings and a camel-colored blazer, walks alongside him, talking to him, before moving out of frame.  A man in a black suit stands nearby in the background. Further ahead on the right, a cameraman briefly appears at the edge of the shot then quickly exits. Further ahead, a young blonde woman wearing glasses, a bright blue teal beanie, a black top, and several bracelets stands stationary, holding a small makeup applicator with a dark tip. As the man reaches her position, he stops and turns his head slightly, presenting his profile. She gently dabs and sweeps the makeup substance onto his right cheekbone below his eye while he keeps his gaze lowered. The camera slowly pushes in closer as she continues applying carefully across his cheek. Meanwhile, two cameramen walk through the blurred background from left to right. He remains stoic and motionless throughout. Toward the end of the makeup application, the woman in the camel blazer reappears from the left side of the frame. Soft diffused overhead lighting creating a warm yellowish ambiance. Naturalistic, observational style, tense tone.<br><br><strong>Audio Prompt</strong>: In a quiet indoor environment with a faint, low-level room tone, a mature woman [Speaker A] speaks in a calm, neutral tone: "It's all in here. Stick to the script. We're going to get you touched up first." Her voice is steady and measured, suggesting a professional or instructional context.</p></div>
+              <div class="item item-video2"><video poster="" controls muted playsinline preload="metadata"><source src="videos/34.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a covered residential porch with white horizontal siding and a blurred red object in the background, an older man with wavy salt-and-pepper hair and a wrinkled, concerned face sits wearing a tan canvas work jacket over a dark blue V-neck sweater and a light checkered collared shirt. Beside him on his right, a woman with long straight reddish-brown hair in a dark top is seen mostly from behind and in profile, with a blue and white chevron-patterned pillow partially visible behind her. He maintains a steady, deeply concerned gaze on her as he speaks intently. In response, the woman throws her head back slightly, mouth wide.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a mature man [Speaker A] speaks in a calm, gentle, and persuasive tone: "I want to be here to help you." Midway through his sentence, a mature woman [Speaker B] interjects with a brief, overlapping "Yeah." [Speaker B] then continues in a firm, slightly hesitant tone: "No, I think it's better if I tell her myself." [Speaker A] continues, his voice softening with concern: "You know, she would want you to wait."</p></div>
+              <div class="item item-video3"><video poster="" controls muted playsinline preload="metadata"><source src="videos/35.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: On a residential city street lined with multi-story brick buildings and bare trees under an overcast sky, a young white woman with long straight light-brown hair held back by a blue and red patterned headband faces another boy seen from behind with short blonde hair, a dark grey flat cap, a dark jacket, and a brown leather bag strap. She wears a vibrant red hooded coat with plaid lining open over a black button-up shirt. She speaks with a warm knowing smile revealing braces on her teeth. She leans forward slightly, closing the distance, and raises her one hand to place it gently on the boy's shoulder. Medium close-up, eye-level, over-the-shoulder composition. Natural diffused overcast daylight with soft shadows. Muted palette of cool greys and browns punctuated by the strong red of her coat. Cinematic realism, intimate tone.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting with a faint, low-level room tone, a mature woman [Speaker A] speaks in a calm, gentle, and slightly seductive tone: /"Well, I'm going to be taking care of you from now on. Would you like that?"</p></div>
+              <div class="item item-video4"><video poster="" controls muted playsinline preload="metadata"><source src="videos/36.mp4" type="video/mp4"></video><p class="baton-slide-caption"><strong>Video Prompt</strong>: Inside an old car, a girl wearing a grey-white t-shirt first looks down, then smiles slightly while steering along a rural road. A small figurine sits on the dashboard. The camera then pans left to reveal a passenger wearing a colorful wrestling mask.<br><br><strong>Audio Prompt</strong>: A dramatic orchestral score with sweeping strings. The music is layered with the sounds of a vehicle engine starting and revving. A dog barks repeatedly in the background, its voice echoing slightly as if in an open space. A boy [Speaker A] shouts: \”Ah"</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="baton-full-carousel-section hero is-small">
+    <div class="hero-body" style="padding-top: 1.5rem; padding-bottom: 0;">
+      <div class="container is-widescreen">
+        <div class="baton-grid-head">
+          <h2 class="title is-3 has-text-centered" style="width: 100%; border: none; display: block; padding-bottom: 0;">Comparison Results</h2>
+        </div>
+        <div class="baton-carousel-cell baton-full-carousel-cell">
+          <div id="baton-carousel-comparison" class="carousel results-carousel baton-multi-video-carousel">
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/1.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/1.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/1.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/1.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/1.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: On a sunny suburban backyard with green lawn and tall hedges, a woman in a ribbed sweater and black skirt rallies a shuttlecock with a boy across a badminton net. He jogs off-screen to fetch it; she turns toward camera, striding forward with arms raised in playful triumph. A second boy charges in from behind, tackling her into wrestling on the grass — she lifts him, spins him around, both laughing joyously. Handheld tracking shot follows the action, shifting from eye-level to low-angle during the lift.<br><br><strong>Audio Prompt</strong>: A fast-paced electronic dance music track with a driving beat and synthesized melodies plays throughout the clip. A boy [Speaker A] shouts excitedly in a energetic voice: \" Oh no! Ten points! I'm scared! She's the winner!" A girl [Speaker B] shouts back with equal excitement: \"We're the winners!"</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/2.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/2.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/2.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/2.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/2.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: On a residential street corner, a young Asian boy in bright blue shorts stands holding a brown Spalding basketball in one hand and a yellow-orange ball in the other. The camera slowly orbits from behind him onto a concrete patio beside a dense green hedge. He drops into a low stance and begins simultaneously dribbling both balls side by side, bouncing them in rhythm as he moves forward step by step along the road. Medium close-up widening to a tracking shot, eye-level shifting to slightly high-angle.<br><br><strong>Audio Prompt</strong>: Set in an outdoor environment, a young boy [Speaker A] speaks in a clear, instructional tone: \"This is two ball basketball drill.". Immediately after he finishes speaking, the rhythmic, percussive sound of a basketball being dribbled on a hard surface begins and continues for the rest of the clip.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/3.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/3.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/3.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/3.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/3.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: Against a red brick wall, a male soldier with short dark hair in a greenish-brown military jacket leans toward a female companion on his right, who has styled dark hair under a brown beret and wears a brown coat with a thick fur collar. He moves in to kiss her, but she gently pushes him back with her hand on his shoulder and speaks earnestly while looking down at him. They pause, pressing their noses together, then share a tender kiss. He pulls away and begins to move off; she watches him go, her expression one of quiet contentment. Cinematic realism with low saturation and a cool color temperature overall, Intimate, The scene takes place outdoors during daytime, likely near a building made of red bricks. The environment is a historical period in World War I. Other figures can be seen walking around in the out-of-focus background, creating a sense of activity but also emphasizing isolation. The lighting is natural daylight.<br><br><strong>Audio Prompt</strong>: A soft, melancholic instrumental music piece plays, featuring gentle piano melodies and sustained strings, creating a somber and emotional atmosphere. A young woman [Speaker A], her voice trembling with emotion and urgency, speaks in a breathy, pleading tone: \"Come back to me." She continues, her voice breaking slightly: \"Stay alive and come back to me." The music swells subtly, underscoring the emotional weight of her words before fading out.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/4.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/4.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/4.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/4.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/4.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: On a sunlit outdoor asphalt basketball court, bordered by dense green trees under a clear blue sky, a young man with short brown hair wearing dark sunglasses, a grey baseball cap, a black t-shirt and black Nike athletic shorts. He picks up a red basketball. He stands, turns away from the camera, and walks along the baseline, dribbling the ball between his legs. As he nears the free-throw line he takes a jump shot; the ball arcs over the rim and drops through the net. Medium-to-tracking shot, eye-level, with leading room guiding the viewer toward the basket. Natural high-key golden-hour daylight casts soft shadows across the grey court. Observational tone capturing the action in real time.<br><br><strong>Audio Prompt</strong>: Set in an outdoor environment with birdsong and faint rustling sounds, a young man [Speaker A] speaks in a calm, encouraging tone: \"Easy peasy, baby.\" The sound of a ball being dribbled on a hard surface is heard, followed by a sharp impact as it hits a backboard or wall. The dribbling resumes, accompanied by the soft thud of the ball bouncing on the ground.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/5.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/5.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/5.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/5.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/5.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: From a low angle inside a dark trench, a young white soldier in his late teens wearing a Brodie helmet, a thick brownish-green jacket, webbed ammunition pouches, fingerless knit gloves, and a large backpack grips a Lewis Gun with both hands and cautiously pushes up the steep earthen steps. His dirt-smudged face shows intense concentration as he aims steadily toward a damaged stone building above under an overcast sky. Suddenly, a single gunshot cracks from the building above; the round narrowly misses him and strikes the top step, sending a puff of dirt into the air. Startled, he flinches and stumbles backward down the steps. He collapses heavily against the rough concrete trench wall, mouth agape in a silent scream of shock. His expression shifts to dazed disbelief as he looks upward, breathing heavily with wide eyes. Diffused overcast light casts soft shadows in a desaturated, cool-toned palette of muted greens, greys, and browns. Rubble-strewn ground and a blown-out brick building in the background complete a grim, battle-scarred wartime setting of gritty realism.<br><br><strong>Audio Prompt</strong>: An outdoor ambient atmosphere with faint wind. Steady footsteps climb rough stone steps. Suddenly, a single sharp rifle shot cracks and echoes across the open air. After a brief silence, a soldier [Speaker A] breathes heavily in rapid, shaky gasps that gradually slow into exhausted, labored exhales.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/6.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/6.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/6.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/6.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/6.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: Indoors against a light gray wall, a large projection screen behind displays a bold red logo with a white bone icon above the words "BARK DOG ADVERTISING." On the left stands an older Black man with short dark hair in a charcoal grey pinstripe suit jacket, deep red collared shirt, red pocket square. To his right stands a middle-aged white woman with shoulder-length wavy brown hair and bangs, wearing a leopard-print blouse with billowy sleeves, a high-waisted black leather skirt, layered gold necklaces. The woman speaks first, raising her right index finger to emphasize a point. The man then responds, lifting both palms up in an explanatory gesture. The woman speaks again. The man replies, bringing his hands together in front of him as he talks. The woman finishes the exchange, lowering her hands with a concluding nod.<br><br><strong>Audio Prompt</strong>: In a quiet indoor setting, a mature woman [Speaker A] speaks in a steady, confident tone: \"I both worked in creative at Ogilvy and were very successful." A mature man [Speaker B] responds in a similarly confident, slightly boastful tone: \"Hugely successful. Shaq and the General Insurance." The woman [Speaker A] interjects proudly: \"Ours." The man [Speaker B] continues: \"Shaq and Icy Hot." The woman [Speaker A] replies with equal pride: \"Ours."</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/7.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/7.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/7.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/7.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/7.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: On a sandy ocean floor with purple and green rock formations, stylized coral, and glowing ethereal patterns on a dark blue cliff face behind, Patrick — a pink starfish in a green shirt and shorts — sits on a wooden log looking sad. SpongeBob — a yellow sea sponge in his white shirt, brown pants, and small hat— stands nearby to the right, looking concerned. Patrick suddenly bursts into loud crying, two massive streams of tears pouring from his eyes like waterfalls. The force of his own crying pushes him backward, rolling him off the log. He quickly gets back up, drapes himself over the log, and continues sobbing. Then he suddenly lifts his head — his two streams of tears intensify into powerful blue laser-like beams that blast directly at SpongeBob, launching him off-screen. SpongeBob's small hat stays behind, spinning in mid-air before gently dropping to the sandy ground. Medium shot, eye-level, rule-of-thirds composition with Patrick on the left third and SpongeBob on the right. High-key, even lighting enhances the vibrant saturated palette of pink, yellow, green, and deep blues. 2.5D animation style with flat character designs rendered against depth-layered backgrounds, exaggerated proportions, fantastical physics, and a comedic, absurd tone.<br><br><strong>Audio Prompt</strong>: In a chaotic and noisy environment, a young boy [Speaker A] begins to speak in a high-pitched, excited voice: \"Hi, my name is...\" when she is abruptly cut off by a loud, high-pitched scream. A man [Speaker B] lets out a long, drawn-out cry of pain or surprise. The boy [Speaker A] tries again, saying, \"Hi, my name is...\" but is immediately interrupted by another piercing scream. The audio is filled with overlapping screams and chaotic background noise throughout.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ovi</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ovi/8.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">UniAVGen</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/uniavgen/8.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">LTX-2</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/ltx2/8.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">MOVA</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/mova/8.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/8.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: A young Caucasian man stands at an outdoor shooting range, holding a scoped AR-15 rifle, he fires several shots at a nearby pine tree, then reloads.<br><br><strong>Audio Prompt</strong>: In a quiet, open outdoor environment, a sharp gunshot rings out, followed by a male voice [Speaker A] saying \"Ah\" in a neutral tone. Immediately after, another gunshot is fired. After a brief pause, a mechanical click is heard, as if a weapon is being reloaded.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="baton-full-carousel-section hero is-small">
+    <div class="hero-body" style="padding-top: 1.5rem; padding-bottom: 0;">
+      <div class="container is-widescreen">
+        <div class="baton-grid-head">
+          <h2 class="title is-3 has-text-centered" style="width: 100%; border: none; display: block; padding-bottom: 0;">Comparison Results With Commercial Models</h2>
+        </div>
+        <div class="baton-carousel-cell baton-full-carousel-cell">
+          <div id="baton-carousel-commercial" class="carousel results-carousel baton-multi-video-carousel">
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Veo3.1</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/veo3.1/9.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Wan2.7</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/wan2.7/9.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Kling3.0</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/kling3/9.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Seedance2.0</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/seedance2/9.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/9.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: Inside a modern, multi-level space agency headquarters with concrete pillars and stone floors, a military officer in an air force dress uniform addresses a gathered team of scientists in white lab coats, gesturing emphatically. He finishes, turns, and strides down a corridor continuing to speak with animated gestures. He enters an office flanked by two security guards, revealing a vast workspace of desks and data monitors, with a festive holiday display of lit miniature trees glowing inside against floor-to-ceiling windows framing snow-covered mountains. Medium shots on groups transition to tracking shots following the officer; eye-level, soft diffused ambient light with warm holiday string lights, cinematic realism style.<br><br><strong>Audio Prompt</strong>: In a festive indoor setting with a low-level room tone, a mature man [Speaker A] speaks in a cheerful, enthusiastic tone: \"So we thought, might be a good idea to gather everyone together, and wish you a merry Christmas!" As he finishes, a burst of upbeat, orchestral holiday music swells, featuring bright brass and chimes. A chorus of voices [Speaker B] respond in unison with a joyful, celebratory tone: \"Merry Christmas!" The music continues as [Speaker A] speaks in a playful, commanding tone: \"Let us march!" The music swells again, becoming more prominent and triumphant as the scene concludes.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="baton-comparison-unit">
+                <div class="baton-comparison-grid">
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Veo3.1</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/veo3.1/10.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Wan2.7</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/wan2.7/10.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Kling3.0</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/kling3/10.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Seedance2.0</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/seedance2/10.mp4" type="video/mp4"></video></div>
+                  <div class="baton-comparison-cell"><span class="baton-method-label">Ours</span><video poster="" controls muted playsinline preload="metadata"><source src="videos/comparisons/baton/10.mp4" type="video/mp4"></video></div>
+                </div>
+                <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: At a nighttime high-rise terrace, nine people sit around a long dining table laden with food and wine glasses. At the center of the table sits a bearded man in a brown turtleneck, who stares wide-eyed. To his left, four guests are seated in order: a woman in a green dress, one men in a dark floral shirt, one man in a black shirt, and a woman in a white camisole. To his right, four more guests are arranged: a curly-haired man in a black long-sleeved shirt, a man in a casual jacket, a woman in a white camisole, and a woman in a gold camisole. The camera begins in a close-up on the bearded man at center, then the curly-haired man to his right holds a dark wine bottle and magically pours wine into a glass, astonishing the bearded man. As the camera slowly pulls back, the remaining guests gradually appear on screen from the center. one man raises his glass of red wine to propose a toast, and the others follow, lifting their glasses one by one. All nine guests break into smiles, lean in, and clink their glasses together over the center of the table in a joyous collective toast. cinematic realism style.<br><br><strong>Audio Prompt</strong>: In a lively indoor setting with the ambient murmur of a social gathering, a man [Speaker A] with a calm, mid-range voice suggests, \"Un brindis. Un brindis y ya." A second man [Speaker B], with a slightly higher-pitched and more insistent tone, replies, \"No." The third man [Speaker C] then encourages, \"Venga, va. Un brindis por el futuro." A woman [Speaker D] with a clear, mid-range voice echoes, \"Por el futuro." The fourth man [Speaker E] affirms, \"Eso es. Por el futuro." The group [Speaker F] responds with a collective, low-pitched \"Oh!" as the sound of glasses clinking together is heard.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="baton-ablation-section hero is-small">
+    <div class="hero-body" style="padding-top: 1.5rem; padding-bottom: 0;">
+      <div class="container is-widescreen">
+        <div class="baton-grid-head">
+          <h2 class="title is-3 has-text-centered" style="width: 100%; border: none; display: block; padding-bottom: 0;">Ablation Study</h2>
+        </div>
+        <div class="baton-ablation-stack">
+          <div class="baton-ablation-cell">
+            <div class="baton-ablation-grid-11">
+              <div class="baton-ablation-video"><span class="baton-method-label">w/o VA-Planner</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-1.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/ PE</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-2.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/ Frozen LLM</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-3.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/o Learnable Query</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-4.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/o Tower</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-5.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/o RoPE in Tower</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-6.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/ TA-Tok+WavTokenizer</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-7.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/ DINOv3</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-8.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/ Beats</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-9.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/ Unified Tokens</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-10.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">Baton</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/1-11.mp4" type="video/mp4"></video></div>
+            </div>
+            <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: A light-skinned Latin American man wearing sunglasses, a black t-shirt, beige shorts, and a large backpack, speaking while cycling. Then, a young woman in a teal-blue camisole is seen riding her bicycle just behind him. As they continue forward, they move steadily along a wide dirt road through a rural area with white-walled houses, trees, and power lines under an overcast sky. A local man stands in the doorway of one of the white-walled houses. Along the way, a local woman passes by on one side, reinforcing the sense of ongoing movement.<br><br><strong>Audio Prompt</strong>: Set in an outdoor environment, a young man [Speaker A] speaks in a steady, conversational tone: \"to buy drinks, tip our tour guide, tip the guy who played the guitar for us. So, now we're we're leaving the fields and we're heading back into town to to get some money"</p>
+          </div>
+          <div class="baton-ablation-cell">
+            <div class="baton-ablation-grid-3">
+              <div class="baton-ablation-video"><span class="baton-method-label">w/o RS-RoPE</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/2-1.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">w/ Temporal RoPE</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/2-2.mp4" type="video/mp4"></video></div>
+              <div class="baton-ablation-video"><span class="baton-method-label">Baton</span><video poster="" controls autoplay muted loop playsinline preload="metadata"><source src="videos/ablations/2-3.mp4" type="video/mp4"></video></div>
+            </div>
+            <p class="baton-slide-caption baton-comparison-prompt baton-large-caption"><strong>Video Prompt</strong>: A young Caucasian man stands at an outdoor shooting range, holding a scoped AR-15 rifle, he fires several shots at a nearby pine tree, then reloads.<br><br><strong>Audio Prompt</strong>: In a quiet, open outdoor environment, a sharp gunshot rings out, followed by a male voice [Speaker A] saying \"Ah\" in a neutral tone. Immediately after, another gunshot is fired. After a brief pause, a mechanical click is heard, as if a weapon is being reloaded.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section baton-bibtex-section" id="BibTeX">
+    <div class="container is-max-desktop">
+      <div class="bibtex-header">
+        <h2 class="title is-3" style="margin-bottom: 0;">BibTeX</h2>
+        <button type="button" class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <!--  BibTeX -->
+      <pre id="bibtex-code"><code>
+        @article{baton2026,
+        title={Baton: Explicit Semantic Blueprints for Joint Video-Audio Generation},
+        author={Tu, Shuyuan and Tian, Qi and Yang, Zihan and Wu, Yue and Han, Xintong and Kong, Weijie and Xiong, Jiangfeng and Zhang, Jian-Wei and Zhong, Zhao and Bo, Liefeng and Wu, Zuxuan and Jiang, Yu-Gang},
+        journal={arXiv preprint arXiv:XXXX.XXXXX},
+        year={2026}
+      }
+      </code></pre>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content has-text-centered">
+            <p>
+              This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic Project Page Template</a> (adapted from <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>).
+              This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
