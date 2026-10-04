@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+      Prism: Dynamic Sparse Attention for Native 2K Joint Video-Audio Generation Model Training
+    </title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main>
+      <!-- Header: title, authors, affiliations, and resource links -->
+      <header class="hero">
+        <div class="hero-inner">
+          <h1><span>Prism: Dynamic Sparse Attention for Native 2K Joint Video-Audio Generation Model Training</span></h1>
+          <div class="paper-authors">
+            <div class="author-list">
+              <div class="author-row">
+                <a href="https://github.com/Francis-Rings" target="_blank" rel="noopener noreferrer">Shuyuan Tu<sup>1</sup></a>
+                <a href="https://scholar.google.com/citations?hl=zh-CN&user=Ypu45nIAAAAJ" target="_blank" rel="noopener noreferrer">Qi Tian<sup>2</sup></a>
+                <a href="https://yinminghuang.github.io/" target="_blank" rel="noopener noreferrer">Yinming Huang<sup>1</sup></a>
+                <a href="https://scholar.google.com/citations?hl=en&user=1xTR6qoAAAAJ" target="_blank" rel="noopener noreferrer">Yue Wu<sup>2</sup></a>
+              </div>
+              <div class="author-row">
+                <a href="https://scholar.google.com/citations?hl=zh-CN&user=FGiWOIAAAAAJ" target="_blank" rel="noopener noreferrer">Xintong Han<sup>2</sup></a>
+                <a href="https://scholar.google.com/citations?user=lMQADDUAAAAJ&hl=zh-CN" target="_blank" rel="noopener noreferrer">Kaihang Pan<sup>3</sup></a>
+                <a href="https://scholar.google.com/citations?hl=zh-CN&user=gsOklKAAAAAJ" target="_blank" rel="noopener noreferrer">Weijie Kong<sup>2</sup></a>
+                <a href="https://scholar.google.com.hk/citations?hl=zh-CN&user=lHbXg_0AAAAJ" target="_blank" rel="noopener noreferrer">Jiangfeng Xiong<sup>2</sup></a>
+              </div>
+              <div class="author-row">
+                <a href="https://scholar.google.com/citations?hl=zh-CN&user=nF_klRIAAAAJ" target="_blank" rel="noopener noreferrer">Jian-Wei Zhang<sup>2</sup></a>
+                <a href="https://scholar.google.com/citations?hl=en&user=7t12hVkAAAAJ" target="_blank" rel="noopener noreferrer">Zuxuan Wu<sup>1</sup></a>
+                <a href="https://scholar.google.com/citations?user=f3_FP8AAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Yu-Gang Jiang<sup>1</sup></a>
+              </div>
+            </div>
+            <div class="affiliation-list">
+              <span><sup>1</sup>Fudan University</span>
+              <span><sup>2</sup>Hunyuan Foundation Model Team, Tencent Inc</span>
+              <span><sup>3</sup>Zhejiang University</span>
+            </div>
+          </div>
+          <div class="resource-links">
+            <span class="pending"><b>PDF</b>Paper <small>Coming soon</small></span>
+            <span class="pending"><b>GH</b>Code <small>Coming soon</small></span>
+            <a href="https://www.youtube.com/watch?v=HUiEFLTY9-E" target="_blank" rel="noopener noreferrer"><b>YT</b>YouTube</a>
+            <span class="pending"><b>HF</b>Model <small>Coming soon</small></span>
+          </div>
+          <nav class="jump-links">
+            <a href="#demo-video">Demo Video</a>
+            <a href="#synthesized-results">Synthesized Results</a>
+            <a href="#model-comparisons">Model Comparisons</a>
+            <a href="#ablation-study">Ablation Study</a>
+            <a href="#resolution-scaling">Resolution Scaling</a>
+          </nav>
+        </div>
+      </header>
+      <div class="container">
+        <!-- Embedded YouTube presentation, following StableAvatar's standard iframe structure -->
+        <section class="paper-card" id="demo-video">
+          <h2>Demo Video</h2>
+          <div class="youtube-card">
+            <div class="youtube-wrap">
+              <iframe src="https://www.youtube.com/embed/HUiEFLTY9-E" title="Demo video" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+            <div class="youtube-local-help" hidden>
+              <strong>
+                Open this page with Prism Project Page.app to play the YouTube video here.
+              </strong>
+              <span>YouTube blocks embedded playback when index.html is opened directly as a local file.</span>
+            </div>
+            <div class="youtube-actions">
+              <a class="youtube-link" href="https://www.youtube.com/watch?v=HUiEFLTY9-E" target="_blank" rel="noopener noreferrer">Watch in HD on YouTube ↗</a>
+            </div>
+          </div>
+        </section>
+        <!-- Synthesized results: single-video examples and their prompts -->
+        <section id="synthesized-results">
+          <h2>Synthesized Results</h2>
+          <p class="audio-hint"><strong>Please turn on your audio.</strong></p>
+          <div class="results-gallery">
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 01
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media1.jpg" aria-label="Ours, comparison case 1"><source src="media/demo-1-media1.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;subtle outdoor pitch ambience and distant crowd murmurs&lt;/sfx&gt;. Wide tracking shot of an outdoor soccer match on a green grass pitch under daylight. A player in a white kit controls a forward pass and dribbles toward the right wing of the penalty area, while defenders in navy blue jerseys track back to mark him. In the background, spectators stand along a raised hillside next to a red playground slide and trees. A male commentator delivers sports commentary in German: &lt;speech&gt;lag von Kalmar landet am St. Johanner und dann glücklicherweise im Aus und nicht im Tor.&lt;/speech&gt;</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 02
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media2.jpg" aria-label="Ours, comparison case 2"><source src="media/demo-1-media2.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;rhythmic percussive drum beats and faint outdoor street traffic ambience&lt;/sfx&gt;. Eye-level tracking shot behind a traffic police officer on a sunlit city street. The Black male officer, dressed in a crisp white uniform, peaked cap, and a green-yellow-blue striped belt, energetically directs a long queue of white cars. He raises his right hand to signal vehicles, then bends low into a dynamic, dance-like lunge while sweeping his arms forward. Deep rhythmic male vocalizations accompany his stylized movements: &lt;speech&gt;hm, ooh, ah, ha-ya&lt;/speech&gt;. In the background, pedestrians walk along the roadside sidewalk past multi-story urban buildings and trees under clear daylight.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 03
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media3.jpg" aria-label="Ours, comparison case 3"><source src="media/demo-1-media3.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;ambient store sounds, including people talking and footsteps&lt;/sfx&gt; throughout. Medium close-up, eye-level view. Inside an indoor store with bright lighting. The main focus is a man and a woman conversing. On the left side of the frame is a young-to-middle-aged white woman wearing glasses, with brown wavy medium-short hair, wearing a black jacket and a dark red inner layer, holding a dark-colored wine bottle with a black label featuring gold English text. On the right side is a middle-aged white man with a beard, receding hairline, wearing a gray plaid suit jacket and a light blue shirt, holding a green wine bottle with a white label featuring a minimalist black line pattern and text. Behind them are shelves filled with products, with multiple customers and staff walking and shopping in the background, and a row of track spotlights on the ceiling. Initially, the man in the gray suit holds up the green wine bottle, looking at the woman across from him. Then he dramatically widens his eyes, showing the bottle to her, enthusiastically saying &lt;speech&gt;And the second one that we have a wine.&lt;/speech&gt;. The woman lowers her head, looking at her own dark-colored bottle, smiling. Immediately afterward, the woman in the black jacket looks up at the man, asking curiously &lt;speech&gt;They are also do a wine?&lt;/speech&gt;. The man nods affirmatively, saying &lt;speech&gt;Yep.&lt;/speech&gt;. The man then raises his left hand in a gesture of explanation, continuing to speak &lt;speech&gt;So when you don&#x27;t know it, you&#x27;re kind of afraid because maple.&lt;/speech&gt;</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 04
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media4.jpg" aria-label="Ours, comparison case 4"><source src="media/demo-1-media4.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;outdoor woodland ambience, footsteps on dirt, and clear speech&lt;/sfx&gt;. Eye-level wide shot on a dirt trail in a forest with tall pine trees. In the background, a vintage red fire truck and parked SUVs stand near the trees. Beside a miniature red off-road vehicle containing a helmet, a man with long hair remarks: &lt;speech&gt;All right. Well, that&#x27;s enough for me.&lt;/speech&gt;. A bearded man in a black hoodie and grey pants turns, walks toward the camera, gestures with open arms, and crosses his arms while explaining: &lt;speech&gt;I had to roll it because we&#x27;ve all, you know, we&#x27;ve all now rolled it, except Stephen, when he clean clothes, which is basically the same thing as rolling for Stephen.&lt;/speech&gt;, followed by an off-camera response: &lt;speech&gt;Yeah.&lt;/speech&gt;.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 05
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media5.jpg" aria-label="Ours, comparison case 5"><source src="media/demo-1-media5.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;cutlery clinking and scraping gently against a ceramic plate&lt;/sfx&gt;. Extreme close-up shot of a plated gourmet lobster dish on a dark-grey plate over a wooden table. A perfectly seared lobster medallion topped with a generous mound of black caviar and resting in a pool of orange seafood bisque is gently sliced and separated with a silver fork and knife, revealing the flaky white meat inside. A casual conversation in English and Malayalam plays over the action: &lt;speech&gt;Oh, delicate as...&lt;/speech&gt; &lt;speech&gt;Mmm.&lt;/speech&gt; &lt;speech&gt;കുറഞ്ഞു നാശമായി.&lt;/speech&gt; &lt;speech&gt;That&#x27;s right.&lt;/speech&gt; &lt;speech&gt;Okay.&lt;/speech&gt; &lt;speech&gt;അത് ആദ്യം തന്നെ പറഞ്ഞതാ.&lt;/speech&gt; &lt;speech&gt;Okay, there we go.&lt;/speech&gt;.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 06
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media6.jpg" aria-label="Ours, comparison case 6"><source src="media/demo-1-media6.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;low engine rumble and tire friction&lt;/sfx&gt;, clear audio with no noticeable reverb. Eye-level medium shot inside a moving car. A middle-aged white man with a short beard, wearing a blue sweater over a light-blue striped shirt and a seatbelt, drives smoothly on an overcast highway. The black interior features white stitching and a panoramic sunroof. He gestures with his right hand while speaking in Portuguese: &lt;speech&gt;Como nós sabemos, uma coisa são os valores anunciados pelas marcas, outras são os valores que nós conseguimos aqui em conditions reais.&lt;/speech&gt;. He then places both hands on the wheel and continues: &lt;speech&gt;ainda só com o iste C40 durante cerca de 80 quilômetros.&lt;/speech&gt;. Industrial buildings, bridges, and marked shipping containers pass outside.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 07
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media7.jpg" aria-label="Ours, comparison case 7"><source src="media/demo-1-media7.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">&lt;music&gt;A grand, tense orchestral score of strings and percussion&lt;/music&gt; throughout. Low-angle wide shot with cool tones and high contrast. A sleek white and charcoal futuristic dropship descends smoothly between towering industrial structures, illuminated by horizontal blue anamorphic lens flares. As it glides toward a designated landing pad, its mechanical landing legs deploy downward onto the platform while a calm pilot or flight controller speaks over the radio comms channel.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 08
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media8.jpg" aria-label="Ours, comparison case 8"><source src="media/demo-1-media8.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">&lt;music&gt;An upbeat pop/R&amp;B track&lt;/music&gt; plays continuously with a female off-screen vocal: &lt;lyrics&gt;I can feel the rhythm down to my toes, yeah, I can see the party is jump—&lt;/lyrics&gt;. Elevated daytime tracking shot outside an urban restaurant with outdoor patio seating and string lights under a wooden pergola. Pedestrians walk along the sidewalk while patrons sit at outdoor tables. A stylish Black man in a green patterned shirt exits the glass door smiling, leading out two young Black women—one wearing a lime-green outfit with a colorful floral robe and sunglasses, and another in a white lace dress. As they step onto the sidewalk, the camera pans right to reveal a brand-new light-blue vehicle adorned with a large red gift bow on its hood. The women react with astonished smiles as everyone enthusiastically shouts: &lt;speech&gt;Surprise!&lt;/speech&gt;, followed by &lt;sfx&gt;cheerful laughter&lt;/sfx&gt;.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 09
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media9.jpg" aria-label="Ours, comparison case 9"><source src="media/demo-1-media9.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">&lt;music&gt;Whimsical orchestral underscoring&lt;/music&gt; plays alongside a deep male comedic singing voice: &lt;speech&gt;I must fix all our voices before the big show. So switch them all back to where they should go!&lt;/speech&gt;, accompanied by &lt;sfx&gt;magical twinkling wand chimes&lt;/sfx&gt; and a playful &lt;sfx&gt;giggle&lt;/sfx&gt;. Low-angle tracking shot inside a colorful animated room with light-blue walls, wooden ceiling beams, and a framed portrait of bear characters. A chubby animated fairy with purple hair, butterfly wings, and a voluminous green dress floats gracefully mid-air. She waves a star-tipped magic wand, creating swirling golden sparkles as she twirls in flight, swoops downward, points her wand with determination, and bobs happily in place.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 10
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media10.jpg" aria-label="Ours, comparison case 10"><source src="media/demo-1-media10.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">No background music; quiet indoor recording with slight room reverb. Eye-level medium shot in a softly lit living room. A middle-aged white woman with short curly dark hair, wearing a yellow V-neck dress, necklace, earrings, and rings, stands near a white sofa and framed botanical artwork, with a bookshelf, floor lamp, and leather chair behind her. The camera slowly pans left and slightly zooms in. She starts with her hands clasped, then speaks warmly: &lt;speech&gt;Because I feel like this get really softens the room a lot.&lt;/speech&gt;, opening both hands gently. She turns right, gestures toward the wall art, and continues: &lt;speech&gt;And there was just a lot of blank wall here. We had one piece over the sofa, but then.&lt;/speech&gt;</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 11
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media11.jpg" aria-label="Ours, comparison case 11"><source src="media/demo-1-media11.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;sound of waves and water currents around the boat&lt;/sfx&gt;. Eye-level medium shot on a sunny day. A middle-aged white man in a gray cap, blue-tinted sunglasses, and gray T-shirt stands on a boat, smiling while holding a massive wet dark-brown grouper. A whit outboard motor and a bearded man with a fishing rod are nearby, with the blue ocean and scattered clouds behind them. He excitedly tells the camera, &lt;speech&gt;I mean, so far we&#x27;ve caught Marlin, Cooper, I mean, a Wahoo, we got slam. Why stop now?&lt;/speech&gt;, briefly turning toward the other fisherman before facing the camera again. The camera gently shakes with the boat&#x27;s movement.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 12
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media12.jpg" aria-label="Ours, comparison case 12"><source src="media/demo-1-media12.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;music&gt;gentle, soothing instrumental music&lt;/music&gt; with subtle natural reverb. A young East Asian woman with long dark brown hair, wearing a pink &lt;text&gt;TERMIT 1989&lt;/text&gt; T-shirt, black athletic pants, and white socks, stands on a wooden platform overlooking a turquoise mountain lake surrounded by snow-capped mountains and coniferous forests. She stirs food in a bag, scoops a spoonful, looks at the camera, and eats as an off-screen male voice says in Russian, &lt;speech&gt;Победаем!&lt;/speech&gt;. She calmly continues eating, taking several more spoonfuls as the camera slowly pans and moves around her.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 13
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media13.jpg" aria-label="Ours, comparison case 13"><source src="media/demo-1-media13.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;high-performance car engine roar from inside the cabin, rising and falling with acceleration and deceleration&lt;/sfx&gt;. First-person eye-level driving view inside a BMW, with the steering wheel and digital dashboard visible. A white male hand grips the wheel. A calm young male voice says, &lt;speech&gt;These cars are remarkably similar, right?&lt;/speech&gt;. It then slows to about 60 km/h approaching a left-hand turn, with the driver steering left as the voice continues, &lt;speech&gt;They&#x27;re both rear wheel drive premium class EVS. They&#x27;re almost.&lt;/speech&gt;</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 14
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media14.jpg" aria-label="Ours, comparison case 14"><source src="media/demo-1-media14.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;noisy outdoor restaurant ambience with conversations and utensil clinking&lt;/sfx&gt;. Eye-level medium close-up. A young white woman with brown hair, round gold-rimmed sunglasses, a nose ring, and a black striped T-shirt sits at an outdoor restaurant surrounded by tables and green umbrellas. She gestures while saying, &lt;speech&gt;Yeah, I would say so. I&#x27;m really enjoying the fresh herbs in here. It&#x27;s lightening it up in a way that I just didn&#x27;t anticipate.&lt;/speech&gt;. She then smiles, raises a patterned beer glass to her lips, and takes a small sip, but does not actually drink any beer. She lowers the glass and sets it down. She continues &lt;speech&gt;Well, cheers to that and a fantastic final meal.&lt;/speech&gt;. She looks down at her plate, then back at the camera with a smile.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 15
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media15.jpg" aria-label="Ours, comparison case 15"><source src="media/demo-1-media15.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;music&gt;solemn, expressive classical chamber music with two violins, cello, harpsichord, and bassoon&lt;/music&gt;, with rich harmonies and noticeable church reverb. Fixed high-angle wide shot of a Gothic stone church with cool light, carved memorials, and a red-and-black tiled aisle. Eight musicians perform in a semicircle, each with a black music stand. They play with focused expressions and gentle rhythmic swaying, bows and fingers moving actively while the harpsichordist plays rapidly from the sheet music. As the piece continues, another cellist enters from the far right and joins the performance.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 16
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media16.jpg" aria-label="Ours, comparison case 16"><source src="media/demo-1-media16.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Natural close-range audio with low background noise and no noticeable reverb. Handheld selfie close-up, slightly low-angle view on a narrow dirt path through a lush temperate rainforest covered in moss and ferns. A young white man with a short beard wears a blue T-shirt, black backpack, and black mesh cap with reflective sunglasses tucked into the brim and a small chest microphone. The frame gently shakes as he walks. He looks at the camera and says admiringly, &lt;speech&gt;How magical this bit of the forest is, though.&lt;/speech&gt;, then glances around, smiles, and sweeps his left arm toward the forest while saying excitedly, &lt;speech&gt;It&#x27;s unreal. Look at this!&lt;/speech&gt;. He lowers his arm, looks left again, grinning in awe, and says &lt;speech&gt;Crazy.&lt;/speech&gt;.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 17
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media17.jpg" aria-label="Ours, comparison case 17"><source src="media/demo-1-media17.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;music&gt;light electronic instrumental music with steady beats and synth melodies&lt;/music&gt;. Eye-level wide shot of a warmly lit living room with wooden ceilings and beams. A stone fireplace with a mounted moose head burns on the left, while a white leather sofa with a brown fur blanket sits in the foreground. The camera slowly pans right and moves forward past large wooden columns into the kitchen, revealing a dark island with a white countertop, four black stools, dark cabinets, a stainless-steel refrigerator, hardwood floors, and distant windows.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 18
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media18.jpg" aria-label="Ours, comparison case 18"><source src="media/demo-1-media18.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">An elderly Black man with a bald head, facial wrinkles, round tortoiseshell glasses, and a colorful pixelated floral shirt sits against a red wall in a warmly lit room. Books, a lamp, and a potted plant are visible behind him. He smiles, waves gently at the camera, then speaks in a calm: &lt;speech&gt;Il suffisait comme vous le savez de se laisser descendre dans la rue de la Salle, de tourner rue des écoles et on tombe dans la salle du Temple.&lt;/speech&gt;. While speaking, he points toward the camera, then sweeps it across his body and extends it forward, palm up.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 19
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-1-media19.jpg" aria-label="Ours, comparison case 19"><source src="media/demo-1-media19.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">A young white woman in a pink sleeveless dress and a young South Asian man in a blue polo sit at a round black grid table under a patio umbrella on a sunny wooden deck overlooking the water. A glass of water sits between them. The man gestures and says gently, &lt;speech&gt;That&#x27;s okay. We can order.&lt;/speech&gt;. The woman shakes her head and responds disappointedly, &lt;speech&gt;It&#x27;s not about the wine. Nothing ever works out for me.&lt;/speech&gt;, then tends to touch the glass. The woman continues, &lt;speech&gt;Why do you say that?&lt;/speech&gt;. She looks at him seriously and explains, &lt;speech&gt;You never smile at me when I smiled at you back at the start, so I decided to use hope this time.&lt;/speech&gt;.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 20
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media1.jpg" aria-label="Ours, comparison case 1"><source src="media/demo-2-media1.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;upbeat rhythmic marimba melodies and gentle canal water ripples&lt;/sfx&gt;. Low-angle tracking shot from a boat moving along the Grand Canal in Venice. The shot begins framed beneath the stone arch of the Rialto Bridge, looking toward colorful historical facades and a gondola ahead. As the boat advances, the camera tilts up to reveal the bridge&#x27;s carved relief sculptures and balustrades beneath a blue sky with scattered clouds, before panning back down to a wide, sunlit vista of the canal lined with classic Venetian buildings, waterfront terraces, and passing boats.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 21
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media2.jpg" aria-label="Ours, comparison case 2"><source src="media/demo-2-media2.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;hip-hop background music with rhythmic beats and vocal samples playing over store speakers&lt;/sfx&gt;. Medium interior shot of a vintage streetwear and sneaker store. In the foreground, a customer browses a clothing rack out of focus. A young man wearing a light-blue plaid button-down shirt and shorts walks into the frame, followed by a friend in a dark green jacket with curly hair. They look around at rows of vintage t-shirts, hanging retro sports jerseys, and a large wall display of colorful sneakers. The young man in plaid turns and speaks: &lt;speech&gt;Yeah, me and my family go to some Seahawks games every once in a while, but...&lt;/speech&gt;. He looks around in awe and continues: &lt;speech&gt;This place is awesome though. You guys come here a...&lt;/speech&gt;.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 22
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media3.jpg" aria-label="Ours, comparison case 3"><source src="media/demo-2-media3.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;upbeat instrumental acoustic guitar with soft percussion and subtle ambient ocean wave rumble&lt;/sfx&gt;. Wide tracking shot of a sunlit tropical ocean with vivid deep-blue water and turquoise cresting swells. A male surfer in a black short-sleeved wetsuit drops down the face of a clean breaking wave, carves sharply up toward the lip, and executes a spray-throwing cutback before continuing along the white water. In the background, another surfer catches a section of the breaking wave.</div>
+              </aside>
+            </article>
+            <article class="case-card final-trio">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 23
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media4.jpg" aria-label="Ours, comparison case 4"><source src="media/demo-2-media4.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;electronic house dance track with a four-on-the-floor kick, synth stabs, rhythmic percussion, and recurring vocal chops&lt;/sfx&gt;. Eye-level medium shot of an outdoor DJ booth set up during golden hour. In the foreground, professional audio gear including Pioneer DJ consoles, studio monitors, a camera rig, and a drink glass sit on the table. A woman in a white halter top and sunglasses dances energetically with raised arms and claps, while a male DJ wearing futuristic shades, headphones, and a white shirt bobs and claps along to the beat. In the background, a massive golden sand dune with distant people along the ridgeline stands adjacent to city skyline buildings under a clear sky as a small drone flies past.</div>
+              </aside>
+            </article>
+            <article class="case-card final-trio">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 24
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media5.jpg" aria-label="Ours, comparison case 5"><source src="media/demo-2-media5.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;subtle outdoor ambience and heartfelt laughter&lt;/sfx&gt;. Over-the-shoulder medium shot outdoors beneath a leafy tree. A bride in a beaded white gown gently taps her father&#x27;s shoulder from behind. The father, dressed in a charcoal suit, light-green tie, and boutonnière, turns around and breaks into broad laughter as his daughter laughs joyfully with him. He smiles warmly and tells her: &lt;speech&gt;You look beautiful. Beautiful. I love this.&lt;/speech&gt;. The two then open their arms and share a loving embrace.</div>
+              </aside>
+            </article>
+            <article class="case-card final-trio">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 25
+                </div>
+              </div>
+              <div class="single-grid">
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media6.jpg" aria-label="Ours, comparison case 6"><source src="media/demo-2-media6.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;gentle acoustic guitar strumming and subtle ambient wind noise from a moving open-top vehicle&lt;/sfx&gt;. An off-screen acoustic track features a soft female voice singing: &lt;lyrics&gt;You know it&#x27;s true&lt;/lyrics&gt;. Medium interior side-profile shot of a young couple riding in an open-air vehicle on a sunny day. The young man drives happily with one hand on the steering wheel, smiling as he glances at his partner and sings aloud: &lt;speech&gt;I don&#x27;t have to tell you, I love you.&lt;/speech&gt;. Beside him, a young woman with wavy red hair in a burgundy top brushes her hair back and gazes affectionately at him under warm afternoon sunlight, with green roadside trees passing in the background.</div>
+              </aside>
+            </article>
+          </div>
+        </section>
+        <!-- Model comparisons from demo-2 -->
+        <section id="model-comparisons">
+          <h2>Model Comparisons</h2>
+          <p class="audio-hint"><strong>Please turn on your audio.</strong></p>
+          <div class="gallery">
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 01
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Ovi</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media7.jpg" aria-label="Ovi, comparison case 7"><source src="media/demo-2-media7.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>LTX-2.3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media8.jpg" aria-label="LTX-2.3, comparison case 7"><source src="media/demo-2-media8.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MOVA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media9.jpg" aria-label="MOVA, comparison case 7"><source src="media/demo-2-media9.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MagiHuman</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media10.jpg" aria-label="MagiHuman, comparison case 7"><source src="media/demo-2-media10.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media11.jpg" aria-label="Ours, comparison case 7"><source src="media/demo-2-media11.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;cheerful cell phone ringtone&lt;/sfx&gt;, followed by &lt;sfx&gt;sci-fi laser beam blast and fiery sizzling sound effects&lt;/sfx&gt;. Eye-level medium shot in a vibrant classroom with wooden cabinets and colorful circle decals. A group of kids and adults sit crowded on a blue couch: a girl in a shark onesie on the left, a girl in a pink tank top, a blonde boy in a blue t-shirt, a little girl in a red dress on the right, and several adults and older children sitting behind them. As a phone rings loudly off-camera, the girl in a shark onesie says: &lt;speech&gt;We can do a lot of things.&lt;/speech&gt;. The girl in the pink tank top turns to the side and complains: &lt;speech&gt;Britney, did you forget to turn your phone off?&lt;/speech&gt;. The woman seated in the back points forward off-camera and replies: &lt;speech&gt;I think it&#x27;s the guy in the second row.&lt;/speech&gt;. A hand enters the lower-right foreground holding a ringing smartphone showing an incoming call from &quot;Fuzz Muffin&quot; with a cat picture. The blonde boy in the blue shirt smiles mischievously and says: &lt;speech&gt;He should know I could do this.&lt;/speech&gt;. Suddenly, his eyes illuminate with glowing red light and fire powerful crimson laser beams directly at the phone, causing explosive sparks, smoke, and flames to erupt.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 02
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Ovi</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media12.jpg" aria-label="Ovi, comparison case 8"><source src="media/demo-2-media12.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>LTX-2.3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media13.jpg" aria-label="LTX-2.3, comparison case 8"><source src="media/demo-2-media13.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MOVA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media14.jpg" aria-label="MOVA, comparison case 8"><source src="media/demo-2-media14.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MagiHuman</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media15.jpg" aria-label="MagiHuman, comparison case 8"><source src="media/demo-2-media15.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media16.jpg" aria-label="Ours, comparison case 8"><source src="media/demo-2-media16.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">&lt;sfx&gt;Mountain bike on a forest trail with tire friction, chain, and suspension sounds&lt;/sfx&gt;. Daytime. An eye-level wide shot shows a young rider in black gear with a blue helmet descending a narrow forest trail on a black mountain bike. The dirt path is covered with roots and rocks, bordered by mossy slopes and tall pine trees. The camera follows from behind. From 2.0s onward, a yellow warning sign with black rockfall symbol and German text &lt;text&gt;Ausfahrt&lt;/text&gt; remains on the right. The rider carefully rolls over the rough terrain with &lt;sfx&gt;bumpy tire sounds over roots and rocks&lt;/sfx&gt;, steering right then left. The camera suddenly pans left with strong motion blur as he speeds through a left turn, revealing a green T-shirt. After stabilizing, it follows him along a wider forest road</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 03
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Ovi</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media17.jpg" aria-label="Ovi, comparison case 9"><source src="media/demo-2-media17.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>LTX-2.3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media18.jpg" aria-label="LTX-2.3, comparison case 9"><source src="media/demo-2-media18.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MOVA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media19.jpg" aria-label="MOVA, comparison case 9"><source src="media/demo-2-media19.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MagiHuman</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media20.jpg" aria-label="MagiHuman, comparison case 9"><source src="media/demo-2-media20.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media21.jpg" aria-label="Ours, comparison case 9"><source src="media/demo-2-media21.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;music&gt;epic orchestral music with deep synths, strings, and percussion&lt;/music&gt;. Overhead wide-to-full shot of a vast granite ridge bordered by dense forests beneath a blue sky with white clouds. A wooden rope barrier and a dead tree stand on the summit. The camera glides forward above the ridge, tilting downward. A man in a beige long-sleeve shirt, red pants, and dark boots appears at the ridge&#x27;s edge, holding a white rectangular container. The camera rapidly accelerates, rotating right as it closes in. The man walks along the ridge, passing the right side of the frame, while the camera skims the rock surface at high speed with strong motion blur. The camera flies low over the mountaintop, following the ridgeline downhill with gentle side-to-side sways, revealing a vast forest stretching ahead.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 04
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Ovi</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media22.jpg" aria-label="Ovi, comparison case 10"><source src="media/demo-2-media22.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>LTX-2.3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media23.jpg" aria-label="LTX-2.3, comparison case 10"><source src="media/demo-2-media23.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MOVA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media24.jpg" aria-label="MOVA, comparison case 10"><source src="media/demo-2-media24.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MagiHuman</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media25.jpg" aria-label="MagiHuman, comparison case 10"><source src="media/demo-2-media25.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media26.jpg" aria-label="Ours, comparison case 10"><source src="media/demo-2-media26.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;music&gt;gentle instrumental music&lt;/music&gt;, with &lt;sfx&gt;soft dough-kneading&lt;/sfx&gt; and &lt;sfx&gt;faint steaming&lt;/sfx&gt;. Medium close-up, eye-level view. In an outdoor courtyard, a middle-aged white woman in a yellow embroidered hoodie stands behind a wooden table holding a cutting board, wooden bowl, rolling pin, flowers, flour, and a small metal mold. A black cast-iron pot on the left emits steam, with stacked wooden logs in the background. She kneads dough in the bowl, lifts it out to roll it into a ball between her palms, returns it to the bowl.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 05
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Ovi</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media27.jpg" aria-label="Ovi, comparison case 11"><source src="media/demo-2-media27.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>LTX-2.3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media28.jpg" aria-label="LTX-2.3, comparison case 11"><source src="media/demo-2-media28.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MOVA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media29.jpg" aria-label="MOVA, comparison case 11"><source src="media/demo-2-media29.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MagiHuman</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media30.jpg" aria-label="MagiHuman, comparison case 11"><source src="media/demo-2-media30.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media31.jpg" aria-label="Ours, comparison case 11"><source src="media/demo-2-media31.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">Continuous &lt;sfx&gt;loud twin sports-car engine roar&lt;/sfx&gt;, recorded up close. Low-angle wide shot in daylight. Two modified Mazda RX-8s race through a right-hand turn on a cracked asphalt track bordered by grass, tire barriers, and trees under a blue sky. A blue RX-8 with a windshield banner leads, followed closely by a dark gray RX-8. The camera tracks them from a low front angle, moving forward and panning with the corner. An enthusiastic young male off-screen voice says, &lt;speech&gt;When I&#x27;m going E85, I&#x27;m going all the power and very little aero.  And so today we have a battle of grip versus &lt;/speech&gt;</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 06
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Kling3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media32.jpg" aria-label="Kling3, comparison case 12"><source src="media/demo-2-media32.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MinMaxH3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media33.jpg" aria-label="MinMaxH3, comparison case 12"><source src="media/demo-2-media33.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Wan3.0</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media35.jpg" aria-label="Wan3.0, comparison case 12"><source src="media/demo-2-media35.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Seedance-2.5</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media34.jpg" aria-label="Seedance-2.5, comparison case 12"><source src="media/demo-2-media34.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media36.jpg" aria-label="Ours, comparison case 12"><source src="media/demo-2-media36.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">A cinematic medium side-profile shot featuring a soldier taking cover against a stone corner in the left foreground, set against a fiery warzone with smoke and orange tracer rounds in the right background. The sequence starts in dramatic slow motion for 2 seconds as stone debris explodes near his head while he flinches with his rifle held diagonally, then speed-ramps to normal combat speed as he raises the muzzle against his chest, slaps a box magazine from his waist pouch into the rifle, and racks the bolt. Upon loading, he turns his head to gaze tensely toward the upper-left while bracing against the wall, captured with falling snow, striking blue-orange contrast lighting, volumetric dust, and photorealistic CGI realism.</div>
+              </aside>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 07
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Kling3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media37.jpg" aria-label="Kling3, comparison case 13"><source src="media/demo-2-media37.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MinMaxH3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media38.jpg" aria-label="MinMaxH3, comparison case 13"><source src="media/demo-2-media38.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Wan3.0</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media39.jpg" aria-label="Wan3.0, comparison case 13"><source src="media/demo-2-media39.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Seedance-2.5</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media40.jpg" aria-label="Seedance-2.5, comparison case 13"><source src="media/demo-2-media40.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-2-media41.jpg" aria-label="Ours, comparison case 13"><source src="media/demo-2-media41.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+              <aside class="prompt-panel">
+                <div class="video-label">
+                  Text Prompt <span class="scroll-hint">Scroll to read</span>
+                </div>
+                <div class="prompt-scroll" tabindex="0">A smooth broadcast-style wide tracking shot of an indoor high school basketball game. A guard in a white jersey (#0) executes a give-and-go with teammate #2 on the sideline, sizes up defender #1 in black at the top of the key with a sharp between-the-legs crossover dribble, and delivers a chest pass to teammate #15, who pops out from the high post to the open right 3-point wing. White #15 catches and rises into a contested 3-point jump shot that bounces high off the rim, prompting multiple interior players (including Black #15 and White #3) to leap and reach for the ball in mid-air as they contest the rebound, with the camera panning seamlessly from perimeter to rim in photorealistic high definition.  A white cursive watermark reading &quot;COZY&quot; is prominently positioned at the top center of the frame throughout the video.</div>
+              </aside>
+            </article>
+          </div>
+        </section>
+        <!-- Ablation study from demo-3 -->
+        <section id="ablation-study">
+          <h2>Ablation Study</h2>
+          <div class="gallery">
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 01
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>SVG-2</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media1.jpg" aria-label="SVG-2, comparison case 1"><source src="media/demo-3-media1.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Sol-Attn</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media2.jpg" aria-label="Sol-Attn, comparison case 1"><source src="media/demo-3-media2.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Full Attn</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media3.jpg" aria-label="Full Attn, comparison case 1"><source src="media/demo-3-media3.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>SSTA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media4.jpg" aria-label="SSTA, comparison case 1"><source src="media/demo-3-media4.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>VMoBA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media5.jpg" aria-label="VMoBA, comparison case 1"><source src="media/demo-3-media5.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>SpargeAttn2</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media6.jpg" aria-label="SpargeAttn2, comparison case 1"><source src="media/demo-3-media6.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media7.jpg" aria-label="Ours, comparison case 1"><source src="media/demo-3-media7.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 02
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>MOVA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media8.jpg" aria-label="MOVA, comparison case 2"><source src="media/demo-3-media8.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>UltraGen</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media9.jpg" aria-label="UltraGen, comparison case 2"><source src="media/demo-3-media9.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Full Attn</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media10.jpg" aria-label="Full Attn, comparison case 2"><source src="media/demo-3-media10.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>LUVE</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media11.jpg" aria-label="LUVE, comparison case 2"><source src="media/demo-3-media11.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>PyramidFlow</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media12.jpg" aria-label="PyramidFlow, comparison case 2"><source src="media/demo-3-media12.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>T3</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media13.jpg" aria-label="T3, comparison case 2"><source src="media/demo-3-media13.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media14.jpg" aria-label="Ours, comparison case 2"><source src="media/demo-3-media14.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+        <!-- Resolution scaling from 480p to native 2K -->
+        <section id="resolution-scaling">
+          <h2>Resolution Scaling</h2>
+          <div class="gallery">
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 01 <span class="resolution-tag">· 480p</span>
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Full Attn</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media15.jpg" aria-label="Full Attn, comparison case 3"><source src="media/demo-3-media15.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>VMoBA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media16.jpg" aria-label="VMoBA, comparison case 3"><source src="media/demo-3-media16.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>SpargeAttn2</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media17.jpg" aria-label="SpargeAttn2, comparison case 3"><source src="media/demo-3-media17.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>PyramidFlow</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media18.jpg" aria-label="PyramidFlow, comparison case 3"><source src="media/demo-3-media18.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o VG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media19.jpg" aria-label="w/o VG, comparison case 3"><source src="media/demo-3-media19.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o AG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media20.jpg" aria-label="w/o AG, comparison case 3"><source src="media/demo-3-media20.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media21.jpg" aria-label="Ours, comparison case 3"><source src="media/demo-3-media21.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 02 <span class="resolution-tag">· 720p</span>
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Full Attn</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media22.jpg" aria-label="Full Attn, comparison case 4"><source src="media/demo-3-media22.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>VMoBA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media23.jpg" aria-label="VMoBA, comparison case 4"><source src="media/demo-3-media23.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>SpargeAttn2</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media24.jpg" aria-label="SpargeAttn2, comparison case 4"><source src="media/demo-3-media24.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>PyramidFlow</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media25.jpg" aria-label="PyramidFlow, comparison case 4"><source src="media/demo-3-media25.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o VG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media26.jpg" aria-label="w/o VG, comparison case 4"><source src="media/demo-3-media26.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o AG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media27.jpg" aria-label="w/o AG, comparison case 4"><source src="media/demo-3-media27.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-3-media28.jpg" aria-label="Ours, comparison case 4"><source src="media/demo-3-media28.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 03 <span class="resolution-tag">· 1080p (1920 × 1080)</span>
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Full Attn</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media1.jpg" aria-label="Full Attn, comparison case 1"><source src="media/demo-4-media1.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>VMoBA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media2.jpg" aria-label="VMoBA, comparison case 1"><source src="media/demo-4-media2.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>SpargeAttn2</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media3.jpg" aria-label="SpargeAttn2, comparison case 1"><source src="media/demo-4-media3.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>PyramidFlow</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media4.jpg" aria-label="PyramidFlow, comparison case 1"><source src="media/demo-4-media4.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o VG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media5.jpg" aria-label="w/o VG, comparison case 1"><source src="media/demo-4-media5.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o AG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media6.jpg" aria-label="w/o AG, comparison case 1"><source src="media/demo-4-media6.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media7.jpg" aria-label="Ours, comparison case 1"><source src="media/demo-4-media7.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+            </article>
+            <article class="case-card">
+              <div class="case-actions">
+                <div class="case-index">
+                  Case 04 <span class="resolution-tag">· 2K (2560 × 1440)</span>
+                </div>
+                <button class="play-all" type="button">Play all · muted</button>
+              </div>
+              <div class="demo-grid odd-grid">
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>Full Attn</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media8.jpg" aria-label="Full Attn, comparison case 2"><source src="media/demo-4-media8.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>VMoBA</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media9.jpg" aria-label="VMoBA, comparison case 2"><source src="media/demo-4-media9.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>SpargeAttn2</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media11.jpg" aria-label="SpargeAttn2, comparison case 2"><source src="media/demo-4-media11.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>PyramidFlow</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media10.jpg" aria-label="PyramidFlow, comparison case 2"><source src="media/demo-4-media10.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o VG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media12.jpg" aria-label="w/o VG, comparison case 2"><source src="media/demo-4-media12.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel">
+                  <div class="video-label">
+                    <span>w/o AG</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media13.jpg" aria-label="w/o AG, comparison case 2"><source src="media/demo-4-media13.mp4" type="video/mp4"></video>
+                </div>
+                <div class="video-panel is-ours">
+                  <div class="video-label">
+                    <span>Ours</span>
+                    <span class="ours-badge">Ours</span>
+                  </div>
+                  <video controls playsinline preload="none" poster="media/demo-4-media14.jpg" aria-label="Ours, comparison case 2"><source src="media/demo-4-media14.mp4" type="video/mp4"></video>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <p>Fudan University · Hunyuan Foundation Model Team, Tencent Inc · Zhejiang University</p>
+    </footer>
+    <script src="script.js">
+    </script>
+  </body>
+</html>
